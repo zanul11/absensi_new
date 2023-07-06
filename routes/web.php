@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PenggunaController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('pengguna/data', [PenggunaController::class, 'data'])
         ->name('pengguna.data');
     Route::resource('pengguna', PenggunaController::class);
-    Route::resource('lokasi', HomeController::class);
+
+    Route::get('lokasi/data', [LocationController::class, 'data'])
+        ->name('lokasi.data');
+    Route::resource('lokasi', LocationController::class);
     Route::resource('informasi', HomeController::class);
     Route::resource('pegawai', HomeController::class);
 });

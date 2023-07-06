@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @push('style')
-<link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/datatables.css')}}">
-<link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/dt-global_style.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/select2/select2.min.css')}}">
 @endpush
 @section('content')
@@ -82,9 +80,7 @@
 @push('scripts')
 <script src="{{asset('plugins/select2/select2.min.js')}}"></script>
 <script>
-    var ss = $(".select2").select2({
-
-    });
+    var ss = $(".select2").select2({});
 </script>
 
 @endpush
