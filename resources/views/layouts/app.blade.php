@@ -10,7 +10,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ setTitle($page_name) }}</title>
+    <title>{{ ucwords($page_name)}} | {{ucwords(env('APP_NAME'))}}</title>
     <link rel="icon" type="image/x-icon" href="{{asset('storage/img/favicon.ico')}}" />
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -19,7 +19,7 @@
     @include('inc.styles')
 </head>
 
-<body {{ ($has_scrollspy) ? scrollspy($scrollspy_offset) : '' }} class=" {{ ($page_name === 'alt_menu') ? 'alt-menu' : '' }} {{ ($page_name === 'error404') ? 'error404 text-center' : '' }} {{ ($page_name === 'error500') ? 'error500 text-center' : '' }} {{ ($page_name === 'error503') ? 'error503 text-center' : '' }} {{ ($page_name === 'maintenence') ? 'maintanence text-center' : '' }}">
+<body>
 
     <!-- BEGIN LOADER -->
     <div id="load_screen">
@@ -43,18 +43,14 @@
 
         <!--  BEGIN CONTENT PART  -->
         <div id="content" class="main-content">
-
             @yield('content')
-
-            @if ($page_name != 'account_settings')
             @include('inc.footer')
-            @endif
         </div>
         <!--  END CONTENT PART  -->
 
     </div>
     <!-- END MAIN CONTAINER -->
-
+    @include('sweetalert::alert')
     @include('inc.scripts')
 
 </body>

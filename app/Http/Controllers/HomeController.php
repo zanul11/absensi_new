@@ -24,11 +24,10 @@ class HomeController extends Controller
     public function index()
     {
         $data = [
-            'category_name' => 'dashboard',
-            'page_name' => 'sales',
-            'has_scrollspy' => 0,
-            'scrollspy_offset' => '',
+            'category_name' => 'home',
+            'page_name' => 'home',
+
         ];
-        return view('dashboard2')->with($data);
+        return view('dashboard')->with($data);
     }
 }
