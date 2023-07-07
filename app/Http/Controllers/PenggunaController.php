@@ -18,7 +18,7 @@ class PenggunaController extends Controller
             ->select(['*']);
         return DataTables::of($data)
             ->addColumn('ket_role', function ($data) {
-                return config('constants.roles.' . $data->role);
+                return ($data->role == 'super') ? '<span class="badge badge-primary"> Super Admin </span>' : '<span class="badge badge-info"> Admin Aplikasi </span>';
             })
             ->addColumn('action', function ($data) {
                 $edit = '<a href="' . route('pengguna.edit', $data->id) . '" class="text-warning">
@@ -33,9 +33,10 @@ class PenggunaController extends Controller
 
                 return $edit . '  ' . $delete;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'ket_role'])
             ->make(true);
     }
+
     public function index()
     {
         return view('pages.pengguna.index')->with($this->data);
@@ -88,9 +89,6 @@ class PenggunaController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $pengguna)
     {
         try {

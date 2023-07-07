@@ -10,7 +10,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ ucwords($page_name)}} | {{ucwords(env('APP_NAME'))}}</title>
+    <title>{{ ucwords(str_replace('_', ' ',$page_name))}} | {{ucwords(env('APP_NAME'))}}</title>
     <link rel="icon" type="image/x-icon" href="{{asset('storage/img/favicon.ico')}}" />
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">

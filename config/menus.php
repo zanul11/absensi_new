@@ -25,6 +25,11 @@ return [
                     'url' => 'lokasi',
                     'title' => 'lokasi absen'
                 ],
+                [
+                    'id' => 'tanggal libur',
+                    'url' => 'tanggal_libur',
+                    'title' => 'tanggal libur'
+                ]
             ]
         ],
         [
@@ -38,6 +43,11 @@ return [
                     'id' => 'pegawai',
                     'url' => 'pegawai',
                     'title' => 'pegawai'
+                ],
+                [
+                    'id' => 'jenis izin',
+                    'url' => 'jenis_izin',
+                    'title' => 'jenis izin'
                 ]
             ]
         ],
