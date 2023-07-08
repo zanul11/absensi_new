@@ -19,6 +19,7 @@
                         "_method": 'DELETE',
                         "_token": token,
                     },
+
                     error: function(xhr, err) {
                         console.log(xhr);
                     },

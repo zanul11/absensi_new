@@ -5,9 +5,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JadwalAbsenController;
 use App\Http\Controllers\JenisIzinController;
 use App\Http\Controllers\KehadiranController;
+use App\Http\Controllers\LaporanAbsenController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\PostingAbsenController;
 use App\Http\Controllers\TglLiburController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,7 +49,8 @@ Route::middleware('auth:web')->group(function () {
         ->name('kehadiran.data');
     Route::resource('kehadiran', KehadiranController::class);
 
-    Route::resource('laporan_absen', TglLiburController::class);
+    Route::resource('posting_absen', PostingAbsenController::class);
+    Route::resource('laporan_absen', LaporanAbsenController::class);
 
     Route::resource('informasi', HomeController::class);
 });

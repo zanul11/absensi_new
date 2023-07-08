@@ -25,7 +25,6 @@ return [
                     'url' => 'lokasi',
                     'title' => 'lokasi absen'
                 ],
-
                 [
                     'id' => 'jadwal absen',
                     'url' => 'jadwal_absen',
@@ -68,6 +67,11 @@ return [
                     'id' => 'kehadiran',
                     'url' => 'kehadiran',
                     'title' => 'kehadiran'
+                ],
+                [
+                    'id' => 'posting absen',
+                    'url' => 'posting_absen',
+                    'title' => 'posting absen'
                 ],
                 [
                     'id' => 'laporan absen',

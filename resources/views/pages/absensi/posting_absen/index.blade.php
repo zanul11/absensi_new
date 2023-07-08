@@ -3,6 +3,7 @@
 @push('style')
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/datatables.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/dt-global_style.css')}}">
+<link href="{{asset('plugins/loaders/custom-loader.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
 @endpush
 @section('content')
@@ -12,40 +13,24 @@
             <div class="widget-content widget-content-area">
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
-                    <h3 class="">Data {{ucwords($page_name)}}</h3>
-                    <a href="{{route('kehadiran.create')}}" class="mt-2 edit-profile">
-                        <i data-feather="plus"></i></a>
-                </div>
-                <form action="" method="get" data-parsley-validate="true">
-                    <div class="row">
-                        <div class="form-group col-lg-4 col-md-12 col-xs-12">
-                            <p></p>
-                            <input name="tanggal" value="{{(Cache::has('dTgl'))?Cache::get('dTgl').' to '.Cache::get('sTgl'):''}}" class="form-control flatpickr-input active basicFlatpickr" type="text" placeholder="Pilih Tanggal.." required>
-                        </div>
-                        <div class="form-group col-lg-4 col-md-12 col-xs-12">
-                            <p></p>
-                            <button type="submit" class="form-control btn-success">Filter Tanggal</button>
-                        </div>
-
+                    <h3 class="">{{ucwords(str_replace('_', ' ',$page_name))}}</h3>
+                    <a href="{{route('home')}}" class="mt-2 edit-profile">
+                        <i data-feather="home"></i></a>
+                </div><br>
+                <!-- <button class="btn btn-primary btn-lg mb-3 mr-3"><span class="spinner-border text-white mr-2 align-self-center loader-sm "></span> Loading</button> -->
+                <!-- <form action="" method="get" data-parsley-validate="true"> -->
+                <div class="row">
+                    <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                        <p>Tanggal Kehadiran</p>
+                        <input name="tanggal" id="tanggal" value="{{(Cache::has('dTgl'))?Cache::get('dTgl').' to '.Cache::get('sTgl'):''}}" class="form-control flatpickr-input active basicFlatpickr" type="text" placeholder="Pilih Tanggal.." required>
                     </div>
-                </form>
+                    <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                        <p></p>
+                        <button id="buttonPosting" type="submit" class="form-control btn-primary"><span id="showLoader" class="spinner-border text-white mr-2 align-self-center loader-sm "></span>Posting Absen</button>
+                    </div>
 
-                <div class="table-responsive">
-                    <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%">#</th>
-                                <th>Tanggal</th>
-                                <th>Pegawai </th>
-                                <th>Absen</th>
-                                <th>Jam</th>
-                                <th>Keterangan</th>
-                                <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
                 </div>
+                <!-- </form> -->
             </div>
         </div>
 
@@ -54,18 +39,54 @@
 </div>
 
 @endsection
-<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> -->
-<!-- <script src="{{asset('plugins/table/datatable/datatables.js')}}"></script> -->
 @push('scripts')
 @include('inc.swal-delete')
-
 <script src="{{asset('plugins/flatpickr/flatpickr.js')}}"></script>
 <script src="{{asset('plugins/table/datatable/datatables.js')}}"></script>
 <script>
+    $("#showLoader").hide();
+    $("#buttonPosting").click(function() {
+        $("#showLoader").show();
+        var tanggalValue = $('#tanggal').val();
+        if (tanggalValue == '') {
+            swal({
+                title: 'Warning!',
+                text: "Pilih Tanggal Kehadiran!",
+                type: 'warning',
+                padding: '2em'
+            })
+        } else {
+            token = '{{csrf_token()}}';
+            $.ajax({
+                url: "{{route('posting_absen.store')}}",
+                type: 'POST',
+                dataType: "JSON",
+                data: {
+                    "_method": 'POST',
+                    "_token": token,
+                    "tanggal": tanggalValue,
+                },
+                success: function(data) {
+                    console.log(data);
+                    swal({
+                        title: 'Berhasil!',
+                        text: "Sukses Posting Absen!",
+                        type: 'success',
+                        padding: '2em'
+                    })
+                    $("#showLoader").hide();
+                },
+                error: function(xhr, err) {
+                    console.log(xhr);
+                },
+
+            });
+        }
+        // console.log(tanggalValue);
+    });
     $(".basicFlatpickr").flatpickr({
         mode: "range",
         dateFormat: "d-m-Y",
-
     });
     $('#datatable').DataTable({
         "oLanguage": {
@@ -82,30 +103,23 @@
         serverSide: true,
         responsive: true,
         lengthChange: true,
-        ajax: "{!! route('kehadiran.data') !!}",
+        ajax: "{!! route('tanggal_libur.data') !!}",
         columns: [{
                 data: 'id',
                 name: 'id',
                 render: function(data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
-            },
-            {
-                data: 'tanggal',
-                name: 'tanggal'
             }, {
-                data: 'pegawai.name',
-                name: 'pegawai.name'
-            }, {
-                data: 'absen',
-                name: 'absen'
-            },
-            {
-                data: 'jam',
-                name: 'jam'
+                data: 'tgl',
+                name: 'tgl'
             }, {
                 data: 'keterangan',
                 name: 'keterangan'
+            },
+            {
+                data: 'user_detail',
+                name: 'user'
             },
             {
                 data: 'action',
@@ -117,5 +131,4 @@
         }
     });
 </script>
-
 @endpush

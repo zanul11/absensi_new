@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('pegawai_id')->constrained('pegawais');
             $table->date('tanggal');
-            $table->tinyInteger('hari')->comment("0:Minggu, 1:Senin, ..... 6:Sabtu");
+            $table->tinyInteger('hari')->comment("1=hari masuk, 0=hari libur");
             $table->boolean('status')->default(1)->comment("Status Masuk, 0:tidak masuk, 1:masuk");
             $table->string('keterangan')->nullable();
             $table->foreignUuid('jenis_izin_id')->nullable()->constrained('jenis_izin');

@@ -63,8 +63,8 @@
                                 <div class="form-group col-lg-3">
                                     <p>Absen</p>
                                     <select class="form-control select2" data-live-search="false" name="jenis">
-                                        <option value="0" {{(old('jenis',$kehadiran->jenis??'')==1)?"selected":""}}>Masuk</option>
-                                        <option value="1" {{(old('jenis',$kehadiran->jenis??'')==0)?"selected":""}}>Pulang</option>
+                                        <option value="0" {{(old('jenis',$kehadiran->jenis??'')==0)?"selected":""}}>Masuk</option>
+                                        <option value="1" {{(old('jenis',$kehadiran->jenis??'')==1)?"selected":""}}>Pulang</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">

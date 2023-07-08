@@ -2,7 +2,6 @@
 
 @push('style')
 <link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
-<link href="{{asset('plugins/flatpickr/custom-flatpickr.css')}}" rel="stylesheet" type="text/css">
 @endpush
 @section('content')
 <div class="layout-px-spacing">
@@ -79,7 +78,6 @@
 @endsection
 @push('scripts')
 <script src="{{asset('plugins/flatpickr/flatpickr.js')}}"></script>
-<script src="{{asset('plugins/flatpickr/custom-flatpickr.js')}}"></script>
 <script>
     $(".basicFlatpickr").flatpickr({
         enableTime: true,
