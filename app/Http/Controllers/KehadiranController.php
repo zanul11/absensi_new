@@ -6,7 +6,6 @@ use App\Http\Requests\KehadiranRequest;
 use App\Models\JenisIzin;
 use App\Models\Kehadiran;
 use App\Models\Pegawai;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use  Yajra\Datatables\DataTables;
 
