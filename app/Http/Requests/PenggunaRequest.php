@@ -27,7 +27,7 @@ class PenggunaRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'username' => str_replace(' ', '', $this->username),
+            'username' => str_replace(' ', '', strtolower($this->username)),
             'password' => bcrypt($this->password),
         ]);
     }

@@ -18,7 +18,7 @@ class PenggunaController extends Controller
             ->select(['*']);
         return DataTables::of($data)
             ->addColumn('ket_role', function ($data) {
-                return ($data->role == 'super') ? '<span class="badge badge-primary"> Super Admin </span>' : '<span class="badge badge-info"> Admin Aplikasi </span>';
+                return ($data->role == 'super') ? '<span class="badge badge-primary"> Super Admin </span>' : '<span class="badge badge-success"> Admin Aplikasi </span>';
             })
             ->addColumn('action', function ($data) {
                 $edit = '<a href="' . route('pengguna.edit', $data->id) . '" class="text-warning">

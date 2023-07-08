@@ -25,10 +25,11 @@ return [
                     'url' => 'lokasi',
                     'title' => 'lokasi absen'
                 ],
+
                 [
-                    'id' => 'tanggal libur',
-                    'url' => 'tanggal_libur',
-                    'title' => 'tanggal libur'
+                    'id' => 'jadwal absen',
+                    'url' => 'jadwal_absen',
+                    'title' => 'jadwal absen'
                 ]
             ]
         ],
@@ -48,6 +49,30 @@ return [
                     'id' => 'jenis izin',
                     'url' => 'jenis_izin',
                     'title' => 'jenis izin'
+                ]
+            ]
+        ],
+        [
+            'id' => 'absensi',
+            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+            'title' => 'absensi',
+            'url' => 'absensi',
+            'caret' => true,
+            'sub_menu' => [
+                [
+                    'id' => 'tanggal libur',
+                    'url' => 'tanggal_libur',
+                    'title' => 'tanggal libur'
+                ],
+                [
+                    'id' => 'kehadiran',
+                    'url' => 'kehadiran',
+                    'title' => 'kehadiran'
+                ],
+                [
+                    'id' => 'laporan absen',
+                    'url' => 'laporan_absen',
+                    'title' => 'laporan absen'
                 ]
             ]
         ],

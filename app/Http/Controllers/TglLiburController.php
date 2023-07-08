@@ -9,7 +9,7 @@ use  Yajra\Datatables\DataTables;
 class TglLiburController extends Controller
 {
     protected   $data = [
-        'category_name' => 'pengaturan',
+        'category_name' => 'absensi',
         'page_name' => 'tanggal_libur',
     ];
 
@@ -41,12 +41,12 @@ class TglLiburController extends Controller
 
     public function index()
     {
-        return view('pages.tanggal_libur.index')->with($this->data);
+        return view('pages.absensi.tanggal_libur.index')->with($this->data);
     }
 
     public function create()
     {
-        return view('pages.tanggal_libur.create')->with($this->data);
+        return view('pages.absensi.tanggal_libur.create')->with($this->data);
     } //
 
     public function store(TanggalLiburRequest $request)
@@ -69,7 +69,7 @@ class TglLiburController extends Controller
 
     public function edit(TglLibur $tanggal_libur)
     {
-        return view('pages.tanggal_libur.create', compact('tanggal_libur'))->with($this->data);
+        return view('pages.absensi.tanggal_libur.create', compact('tanggal_libur'))->with($this->data);
     }
 
     public function update(TanggalLiburRequest $request, TglLibur $tanggal_libur)

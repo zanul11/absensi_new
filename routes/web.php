@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JadwalAbsenController;
 use App\Http\Controllers\JenisIzinController;
+use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PenggunaController;
@@ -38,6 +40,14 @@ Route::middleware('auth:web')->group(function () {
     Route::get('tanggal_libur/data', [TglLiburController::class, 'data'])
         ->name('tanggal_libur.data');
     Route::resource('tanggal_libur', TglLiburController::class);
+
+    Route::resource('jadwal_absen', JadwalAbsenController::class);
+
+    Route::get('kehadiran/data', [KehadiranController::class, 'data'])
+        ->name('kehadiran.data');
+    Route::resource('kehadiran', KehadiranController::class);
+
+    Route::resource('laporan_absen', TglLiburController::class);
 
     Route::resource('informasi', HomeController::class);
 });

@@ -4,12 +4,12 @@
 
         <ul class="navbar-item theme-brand flex-row  text-center">
             <li class="nav-item theme-logo">
-                <a href="/analytics">
-                    <img src="{{asset('img/90x90.jpg')}}" class="navbar-logo" alt="logo">
+                <a href="{{route('home')}}">
+                    <img src=" {{asset('img/90x90.jpg')}}" class="navbar-logo" alt="logo">
                 </a>
             </li>
             <li class="nav-item theme-text">
-                <a href="/analytics" class="nav-link"> {{env('APP_NAME')}} </a>
+                <a href="{{route('home')}}" class=" nav-link"> {{env('APP_NAME')}} </a>
             </li>
         </ul>
 

@@ -37,6 +37,7 @@ class PegawaiRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'username' => str_replace(' ', '', strtolower($this->username)),
             'user' => Auth::user()->name,
             'password' => bcrypt($this->password),
         ]);

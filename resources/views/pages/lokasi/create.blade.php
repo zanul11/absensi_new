@@ -113,6 +113,10 @@
             .addTo(map);
         var baseLayers = {};
 
+        //buat circle radius
+        if (markerHandle != '')
+            L.circle([JSON.parse(markerHandle)[0], JSON.parse(markerHandle)[1]], 100).addTo(map);
+
         baseLayers["ESRI World Imagery"] = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
             attribution: '&copy; <a href="http://www.esri.com/">Esri</a>',
@@ -192,9 +196,10 @@
         }
 
         longlat = JSON.parse(markerHandle);
-
+        console.log('ini : ' + longlat);
         let marker = new L.Marker(longlat);
         Layer.addLayer(marker);
+
         // map.flyTo(longlat).zoom(17);
 
 
