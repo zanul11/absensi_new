@@ -22,7 +22,8 @@ class ApiController extends Controller
         } else {
             return response()->json([
                 'response_code' => 404,
-                'message' => 'Username atau Password Tidak Ditemukan!'
+                'message' => 'Username atau Password Tidak Ditemukan!',
+                'conntent' => null
             ]);
         }
     }
