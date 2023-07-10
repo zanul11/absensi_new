@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// new route
+Route::post('login', [ApiController::class, 'login']);
+Route::get('getLokasiUser/{id}', [ApiController::class, 'getLokasiUser']);
+Route::get('absenPegawai/{id}', [ApiController::class, 'absenPegawai']);
