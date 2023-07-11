@@ -41,8 +41,9 @@ class ApiController extends Controller
     public function absenPegawai($id)
     {
         // return date('H');
+
         if (date('H') > 6 && date('H') < 14) {
-            $cek_sudah_absen = Kehadiran::where('pegawai_id', $id)->where('jenis', 0)->first();
+            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
             if (!$cek_sudah_absen) {
                 // return 'belum absen';
                 Kehadiran::create([
@@ -55,7 +56,7 @@ class ApiController extends Controller
                 ]);
             }
         } else if (date('H') >= 14 && date('H') <= 22) {
-            $cek_sudah_absen = Kehadiran::where('pegawai_id', $id)->where('jenis', 1)->first();
+            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
             if (!$cek_sudah_absen) {
                 // return 'belum absen';
                 Kehadiran::create([
