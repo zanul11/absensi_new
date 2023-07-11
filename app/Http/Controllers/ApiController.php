@@ -38,6 +38,16 @@ class ApiController extends Controller
         ]);
     }
 
+    public function getAbsenPegawai($id)
+    {
+        $user = Kehadiran::where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
+        return response()->json([
+            'response_code' => 200,
+            'message' => 'Success',
+            'conntent' => (count($user) > 0) ? $user : null
+        ]);
+    }
+
     public function absenPegawai($id)
     {
         // return date('H');

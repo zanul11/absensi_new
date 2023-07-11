@@ -23,3 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [ApiController::class, 'login']);
 Route::get('getLokasiUser/{id}', [ApiController::class, 'getLokasiUser']);
 Route::get('absenPegawai/{id}', [ApiController::class, 'absenPegawai']);
+Route::get('getAbsenPegawai/{id}', [ApiController::class, 'getAbsenPegawai']);
