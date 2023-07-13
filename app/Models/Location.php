@@ -10,4 +10,9 @@ class Location extends Model
 {
     use HasFactory, HasUuids;
     protected $guarded = [];
+
+    public function pegawai()
+    {
+        return $this->hasMany(Pegawai::class, 'location_id');
+    }
 }

@@ -43,13 +43,13 @@
   margin-right: 13px;
 }
 .new-control.new-checkbox > input:checked ~ span.new-control-indicator {
-  background: #888ea8;
+  background: blue;
 }
 .new-control.new-checkbox > input:checked ~ span.new-control-indicator:after {
   display: block;
 }
 .new-control.new-checkbox span.new-control-indicator:after {
-  border: solid #888ea8;
+  border: solid blue;
   top: 50%;
   left: 50%;
   margin-left: -2px;
@@ -64,7 +64,7 @@
 }
 .new-control.new-checkbox.checkbox-primary > input:checked ~ span.new-control-indicator {
   background: transparent;
-  border: 2px solid #888ea8;
+  border: 2px solid blue;
 }
 
 .mail-box-container {

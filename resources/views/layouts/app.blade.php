@@ -17,6 +17,7 @@
 
     <!-- Styles -->
     @include('inc.styles')
+    @livewireStyles
 </head>
 
 <body>
@@ -51,6 +52,8 @@
     </div>
     <!-- END MAIN CONTAINER -->
     @include('sweetalert::alert')
+
+    @livewireScripts
     @include('inc.scripts')
 
 </body>

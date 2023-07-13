@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LokasiRequest;
 use App\Models\Location;
+use App\Models\Pegawai;
 use  Yajra\Datatables\DataTables;
 
 class LocationController extends Controller
@@ -14,11 +15,14 @@ class LocationController extends Controller
     ];
     public function data()
     {
-        $data =  Location::query()
-            ->select(['*']);
+        $data =  Location::query()->with('pegawai')->withCount('pegawai');
         return DataTables::of($data)
             ->addColumn('user_detail', function ($data) {
                 return '<small> ' . $data->user . '</br>' . $data->updated_at . '</small>';
+            })
+            ->addColumn('jmlPegawai', function ($data) {
+
+                return  "<a href='" . route('lokasi.show', $data->id) . "' class='btn btn-sm btn-outline-primary' title='Lihat Data'>[ {$data->pegawai_count} ] - Pegawai</a>";
             })
             ->addColumn('action', function ($data) {
                 $edit = '<a href="' . route('lokasi.edit', $data->id) . '" class="text-warning">
@@ -30,12 +34,14 @@ class LocationController extends Controller
 
                 return $edit . '  ' . $delete;
             })
-            ->rawColumns(['action', 'user_detail'])
+            ->rawColumns(['action', 'user_detail', 'jmlPegawai'])
             ->make(true);
     }
 
     public function index()
     {
+        // $daftar_pegawai_lokasi = Pegawai::query()->where('location_id', '9995e198-b896-4942-a735-d263567bd83d')->orderby('name')->get();
+        // return $daftar_pegawai_lokasi->contains('id', '99a20c57-d74d-444b-9eb7-6135a349ba0fs');
         return view('pages.lokasi.index')->with($this->data);
     }
 
@@ -57,9 +63,10 @@ class LocationController extends Controller
     }
 
 
-    public function show(Location $location)
+    public function show(Location $lokasi)
     {
-        //
+
+        return view('pages.lokasi.show', compact('lokasi'))->with($this->data);
     }
 
 
