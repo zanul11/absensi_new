@@ -41,7 +41,7 @@
         <div class="todo-item">
             <div class="row">
                 @foreach($pegawais as $key => $dt)
-                <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="todo-item-inner">
                         <div class="n-chk text-center">
                             <label class="new-control new-checkbox checkbox-primary ">
@@ -56,10 +56,23 @@
                         </div>
                     </div>
                 </div>
+
                 @endforeach
+                @if(count($pegawais)<3) <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="todo-item-inner">
+                        <div class="n-chk text-center">
+                            <label class="new-control new-checkbox checkbox-primary ">
+                            </label>
+                        </div>
+
+                        <div class="todo-content">
+                        </div>
+                    </div>
             </div>
+            @endif
         </div>
     </div>
+</div>
 </div>
 
 @push('scripts')

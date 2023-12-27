@@ -19,7 +19,6 @@
                 <form action="" method="get" data-parsley-validate="true">
                     <div class="row">
                         <div class="form-group col-lg-4 col-md-12 col-xs-12">
-                            <p>{{Cache::get('dTgl')}}</p>
                             <input name="tanggal" value="{{(Cache::has('dTgl'))?Cache::get('dTgl').' to '.Cache::get('sTgl'):date('d-m-Y')}}" class="form-control flatpickr-input active basicFlatpickr" type="text" placeholder="Pilih Tanggal.." required>
                         </div>
                         <div class="form-group col-lg-4 col-md-12 col-xs-12">

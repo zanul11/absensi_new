@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TemplatePegawai;
 use App\Http\Requests\PegawaiRequest;
+use App\Imports\ImportPegawai;
 use App\Models\Location;
 use App\Models\Pegawai;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use  Yajra\Datatables\DataTables;
 
 class PegawaiController extends Controller
@@ -47,7 +51,28 @@ class PegawaiController extends Controller
         return view('pages.pegawai.create', compact('locations'))->with($this->data);
     }
 
+    public function import()
+    {
+        return view('pages.pegawai.import')->with($this->data);
+    }
 
+    public function template()
+    {
+        return Excel::download(new TemplatePegawai(), 'template_pegawai_' . time() . '.xlsx');
+    }
+
+    public function import_post(Request $request)
+    {
+        // return $request;
+        try {
+            Excel::import(new ImportPegawai, $request->file('file'));
+            alert()->success('Success !!', 'Data berhasil disimpan');
+            return redirect()->route('pegawai.import');
+        } catch (\Throwable $th) {
+            alert()->error('Oppss !!', $th->getMessage());
+            return back()->withInput();
+        }
+    }
 
     public function store(PegawaiRequest $request)
     {

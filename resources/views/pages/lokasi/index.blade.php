@@ -23,7 +23,7 @@
                                 <th style="width: 5%">#</th>
                                 <th>Nama</th>
                                 <th>Keterangan </th>
-                                <th>Detail Pegawai </th>
+                                {{-- <th>Detail Pegawai </th> --}}
                                 <th>User </th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
@@ -76,10 +76,10 @@
                 data: 'keterangan',
                 name: 'keterangan'
             },
-            {
-                data: 'jmlPegawai',
-                name: 'jmlPegawai'
-            },
+            // {
+            //     data: 'jmlPegawai',
+            //     name: 'jmlPegawai'
+            // },
             {
                 data: 'user_detail',
                 name: 'user'

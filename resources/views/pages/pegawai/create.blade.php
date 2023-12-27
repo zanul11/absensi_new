@@ -67,7 +67,7 @@
                                     <input id="nohp" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="12" type="number" name="nohp" class="form-control" value="{{ old('nohp',$pegawai->nohp??'') }}" required>
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
-                                    <p>Lokasi Absen</p>
+                                    <p>Lokasi Absen Default</p>
                                     <select class="form-control select2" data-live-search="false" name="location_id">
                                         @foreach ($locations as $key => $dt)
                                         <option value="{{ $dt->id }}" {{ old('location_id',$pegawai->location_id??'')==$dt->id ? 'selected' : '' }}>

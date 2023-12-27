@@ -54,6 +54,6 @@ class LokasiPegawai extends Component
         else
             $this->pegawais = Pegawai::query()->orderby('name')->get();
         // dd($this->keySearch);
-        $this->daftar_pegawai_lokasi = Pegawai::query()->where('location_                                                                                                                                                               id',  $this->locationId)->orderby('name')->get();
+        $this->daftar_pegawai_lokasi = Pegawai::query()->where('location_id',  $this->locationId)->orderby('name')->get();
     }
 }

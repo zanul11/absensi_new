@@ -22,10 +22,10 @@ class LaporanAbsenController extends Controller
             Cache::put('dTgl', $tanggal[0]);
             Cache::put('sTgl', $tanggal[1] ?? $tanggal[0]);
         } else {
-            Cache::forget('dTgl');
-            Cache::forget('sTgl');
+            Cache::put('dTgl', date('01-m-Y'));
+            Cache::put('sTgl', date('d-m-Y'));
         }
-        $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-d')));
+        $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-01')));
         $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
         $pegawai = Pegawai::orderby('name')->get();
         $jenis_izin = JenisIzin::all();
@@ -44,7 +44,7 @@ class LaporanAbsenController extends Controller
             }
             $data_absen[] = $data;
         }
-        return $data_absen;
+        // return $data_absen;
         return view('pages.absensi.laporan_absen.index', compact('data_absen'))->with($this->data);
     }
 

@@ -33,19 +33,23 @@ class PostingAbsenController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->tanggal == null) {
+            alert()->warning('Warning !!', 'Harap Memilih Tanggal');
+            return redirect()->back()->with('error', 'Harap Memilih Tanggal');
+        }
         // return $getHari = date('w', strtotime("+0 day", strtotime('2023-07-02')));
-        // return $request;
+
         $tanggal = (explode("to", str_replace(' ', '', $request->tanggal)));
+        // return $tanggal[0];
+
         $startTimeStamp = strtotime($tanggal[0]);
         $endTimeStamp = strtotime($tanggal[1] ?? $tanggal[0]);
         $timeDiff = abs($endTimeStamp - $startTimeStamp);
         $numberDays = $timeDiff / 86400;  // 86400 seconds in one day
-        // and you might want to convert to integer
+        // // and you might want to convert to integer
         $numberDays = intval($numberDays);
-        // if($numberDays==0){
-        //     $numberDays=
 
-        // }
+
         $from = date('Y-m-d', $startTimeStamp);
         $to = date('Y-m-d', $endTimeStamp);
         Absensi::whereBetween('tanggal', [$from, $to])->delete();
@@ -124,10 +128,10 @@ class PostingAbsenController extends Controller
                                     "status" => 1,
                                     "keterangan" => $getAbsenMasuk->keterangan,
                                     "jenis_izin_id" => null,
-                                    "jam_masuk" => $getAbsenMasuk->jam,
-                                    "is_telat" => (strtotime($getAbsenMasuk->jam) <= strtotime($cekHariKerja->jam_masuk_toleransi)) ? 0 : 1,
-                                    "jam_pulang" => $getAbsenPulang->jam,
-                                    "is_pulang_cepat" => (strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0,
+                                    "jam_masuk" => $getAbsenMasuk->jam ?? null,
+                                    "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime($cekHariKerja->jam_masuk_toleransi)) ? 0 : 1) : 1,
+                                    "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                    "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
                                     "user" => Auth::user()->name,
                                 ];
                             }
@@ -147,8 +151,8 @@ class PostingAbsenController extends Controller
                                     "jenis_izin_id" => null,
                                     "jam_masuk" => '00:00',
                                     "is_telat" => 1,
-                                    "jam_pulang" => $getAbsenPulang->jam,
-                                    "is_pulang_cepat" => (strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0,
+                                    "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                    "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
                                     "user" => Auth::user()->name,
                                 ];
                             } else {
@@ -174,12 +178,10 @@ class PostingAbsenController extends Controller
         }
         // return $data;
         Absensi::insert($data);
-        return true;
-        // $data[] = [
-        //     "id" => $item->id,
-        //     "ranking" => $rank,
-        //     "is_accepted" => ($rank <= $quota_afirmasi)
-        // ];
+        alert()->success('Success !!', 'Berhasil Posting Absen ');
+        return redirect()->route('posting_absen.index');
+        // return true;
+
     }
 
 

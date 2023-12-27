@@ -11,7 +11,7 @@
                 <div class="widget-heading">
                     <h5 class="">Selamat Datang {{Auth::user()->name}}</h5>
                 </div>
-                @livewire('counter', ['title'=>'ini Title bos'])
+                {{-- @livewire('counter', ['title'=>'ini Title bos']) --}}
             </div>
         </div>
 

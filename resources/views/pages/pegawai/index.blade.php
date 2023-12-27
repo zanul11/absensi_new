@@ -15,8 +15,10 @@
                     <h3 class="">Data {{ucwords($page_name)}}</h3>
                     <a href="{{route('pegawai.create')}}" class="mt-2 edit-profile">
                         <i data-feather="plus"></i></a>
+                       
                 </div><br>
                 <div class="table-responsive">
+                    <a class="btn btn-success btn-lg mb-3 mr-3" href="{{route('pegawai.import')}}">Import</a>
                     <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
                         <thead>
                             <tr>
@@ -26,7 +28,7 @@
                                 <th>Username</th>
                                 <th>Alamat</th>
                                 <th>No Hp</th>
-                                <th>Lokasi Absen</th>
+                                {{-- <th>Lokasi Absen</th> --}}
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -86,10 +88,11 @@
             }, {
                 data: 'nohp',
                 name: 'nohp'
-            }, {
-                data: 'lokasi.name',
-                name: 'lokasi.name'
-            },
+            }, 
+            // {
+            //     data: 'lokasi.name',
+            //     name: 'lokasi.name'
+            // },
             {
                 data: 'action',
                 name: 'action'

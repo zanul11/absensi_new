@@ -18,7 +18,8 @@
                         <i data-feather="home"></i></a>
                 </div><br>
                 <!-- <button class="btn btn-primary btn-lg mb-3 mr-3"><span class="spinner-border text-white mr-2 align-self-center loader-sm "></span> Loading</button> -->
-                <!-- <form action="" method="get" data-parsley-validate="true"> -->
+                 <form action="{{route('posting_absen.store')}}" method="post" data-parsley-validate="true">
+                    @csrf
                 <div class="row">
                     <div class="form-group col-lg-12 col-md-12 col-xs-12">
                         <p>Tanggal Kehadiran</p>
@@ -26,11 +27,13 @@
                     </div>
                     <div class="form-group col-lg-12 col-md-12 col-xs-12">
                         <p></p>
-                        <button id="buttonPosting" type="submit" class="form-control btn-primary"><span id="showLoader" class="spinner-border text-white mr-2 align-self-center loader-sm "></span>Posting Absen</button>
+                        <button  type="submit" class="form-control btn-primary">
+                            {{-- <span id="showLoader" class="spinner-border text-white mr-2 align-self-center loader-sm "> --}}
+                                </span>Posting Absen</button>
                     </div>
 
                 </div>
-                <!-- </form> -->
+                </form>
             </div>
         </div>
 
@@ -55,6 +58,7 @@
                 type: 'warning',
                 padding: '2em'
             })
+            $("#showLoader").hide(); 
         } else {
             token = '{{csrf_token()}}';
             $.ajax({
@@ -68,15 +72,16 @@
                 },
                 success: function(data) {
                     console.log(data);
-                    swal({
-                        title: 'Berhasil!',
-                        text: "Sukses Posting Absen!",
-                        type: 'success',
-                        padding: '2em'
-                    })
+                    // swal({
+                    //     title: 'Berhasil!',
+                    //     text: "Sukses Posting Absen!",
+                    //     type: 'success',
+                    //     padding: '2em'
+                    // })
                     $("#showLoader").hide();
                 },
                 error: function(xhr, err) {
+                    $("#showLoader").hide();
                     console.log(xhr);
                 },
 

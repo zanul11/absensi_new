@@ -23,16 +23,24 @@ Auth::routes([
 ]);
 
 Route::middleware('auth:web')->group(function () {
+
     Route::get('pengguna/data', [PenggunaController::class, 'data'])
         ->name('pengguna.data');
     Route::resource('pengguna', PenggunaController::class);
-
     Route::get('lokasi/data', [LocationController::class, 'data'])
         ->name('lokasi.data');
     Route::resource('lokasi', LocationController::class);
 
+    if (Auth::check()) {
+        return Auth::user()->role == "super";
+    }
+
+
     Route::get('pegawai/data', [PegawaiController::class, 'data'])
         ->name('pegawai.data');
+    Route::get('pegawai/import', [PegawaiController::class, 'import'])->name('pegawai.import');
+    Route::post('pegawai/import', [PegawaiController::class, 'import_post'])->name('pegawai.import.store');
+    Route::get('pegawai/template', [PegawaiController::class, 'template'])->name('pegawai.template');
     Route::resource('pegawai', PegawaiController::class);
 
     Route::get('jenis_izin/data', [JenisIzinController::class, 'data'])
