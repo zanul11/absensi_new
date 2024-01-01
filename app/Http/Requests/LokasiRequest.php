@@ -24,8 +24,10 @@ class LokasiRequest extends FormRequest
     {
         return [
             "name" => ["required", "string"],
-            "longlat" => ["required", "string"],
-            "keterangan" => ["required", "string"],
+            "latitude" => ["required", "string"],
+            "longitude" => ["required", "string"],
+            "alamat" => ["required", "string"],
+            "is_connected" => ["required", "boolean"],
             "user" => ["required", "string"],
         ];
     }
@@ -33,6 +35,8 @@ class LokasiRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'latitude' => trim($this->latitude),
+            'longitude' => trim($this->longitude),
             'user' => Auth::user()->name,
         ]);
     }

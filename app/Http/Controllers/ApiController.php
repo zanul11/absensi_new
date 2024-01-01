@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\JadwalAbsen;
 use App\Models\Kehadiran;
 use App\Models\Location;
 use App\Models\Pegawai;
@@ -42,6 +43,8 @@ class ApiController extends Controller
 
     public function getRincianAbsen($id)
     {
+        $jadwal = JadwalAbsen::where('hari', date('N'))->first();
+        $pegawai = Pegawai::where('id', $id)->with('lokasi')->first();
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
         $data = [];
         foreach ($absen as $r) {
@@ -59,15 +62,17 @@ class ApiController extends Controller
             'error' => false,
             'data' => [
                 [
+
                     "id" => $id,
-                    "nik" => $absen[0]->pegawai->nip,
-                    "nama" => $absen[0]->pegawai->name,
+                    "nik" => $pegawai->nip,
+                    "nama" => $pegawai->name,
+                    'jadwal' => ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal->jam_pulang)),
                     "data_absen" => $data,
-                    "hari" => 13,
-                    "telat" => 0,
-                    "masuk" => 3,
-                    "tidak_masuk" => [],
-                    "tanpaketerangan" => 0
+                    "hari" => Absensi::where('pegawai_id', $id)->where('hari', true)->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
+                    "telat" => Absensi::where('pegawai_id', $id)->where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
+                    "masuk" => Absensi::where('pegawai_id', $id)->where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
+                    "tidak_masuk" => Absensi::where('pegawai_id', $id)->where('hari', true)->where('status', true)->whereNotNull('jenis_izin_id',)->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
+                    "tanpaketerangan" => Absensi::where('pegawai_id', $id)->where('keterangan', 'Tidak Absen')->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count()
                 ]
             ]
         ]);

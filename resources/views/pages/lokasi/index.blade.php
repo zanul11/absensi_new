@@ -22,7 +22,8 @@
                             <tr>
                                 <th style="width: 5%">#</th>
                                 <th>Nama</th>
-                                <th>Keterangan </th>
+                                <th>Alamat</th>
+                                <th>Koneksi Internet</th>
                                 {{-- <th>Detail Pegawai </th> --}}
                                 <th>User </th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
@@ -73,8 +74,12 @@
                 name: 'name'
             },
             {
-                data: 'keterangan',
-                name: 'keterangan'
+                data: 'alamat',
+                name: 'alamat'
+            },
+            {
+                data: 'internet',
+                name: 'is_connected'
             },
             // {
             //     data: 'jmlPegawai',

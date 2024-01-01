@@ -20,6 +20,9 @@ class LocationController extends Controller
             ->addColumn('user_detail', function ($data) {
                 return '<small> ' . $data->user . '</br>' . $data->updated_at . '</small>';
             })
+            ->addColumn('internet', function ($data) {
+                return ($data->is_connected == 0) ? '<span class="badge badge-danger"> Tidak Ada </span>' : '<span class="badge badge-success"> Ada </span>';
+            })
             ->addColumn('jmlPegawai', function ($data) {
 
                 return  "<a href='" . route('lokasi.show', $data->id) . "' class='btn btn-sm btn-outline-primary' title='Lihat Data'>[ {$data->pegawai_count} ] - Pegawai</a>";
@@ -34,7 +37,7 @@ class LocationController extends Controller
 
                 return $edit . '  ' . $delete;
             })
-            ->rawColumns(['action', 'user_detail', 'jmlPegawai'])
+            ->rawColumns(['action', 'user_detail', 'jmlPegawai', 'internet'])
             ->make(true);
     }
 

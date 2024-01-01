@@ -44,19 +44,38 @@
                             @else
                             @method('put')
                             @endif
-
-                            <div class="form-group">
-                                <p>Nama Lokasi</p>
-                                <input id="name" type="text" name="name" class="form-control" value="{{ old('name',$lokasi->name??'') }}" required>
+                            <div class="row">
+                                <div class="form-group col-lg-12">
+                                    <p>Nama Lokasi</p>
+                                    <input id="name" type="text" name="name" class="form-control" value="{{ old('name',$lokasi->name??'') }}" required>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <p>Latitude</p>
+                                    <input id="latitude" type="text" name="latitude" class="form-control" value="{{ old('latitude',$lokasi->latitude??'') }}" required>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <p>Longitude</p>
+                                    <input id="longitude" type="text" name="longitude" class="form-control" value="{{ old('longitude',$lokasi->longitude??'') }}" required>
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <p>Koneksi Internet</p>
+                                    <select class="form-control"  name="is_connected">
+                                        <option value="1" {{ old('is_connected',$lokasi->is_connected??'')==1 ? 'selected' : '' }}>
+                                           Ada
+                                        </option>
+                                        <option value="0" {{ old('is_connected',$lokasi->is_connected??'')==0 ? 'selected' : '' }}>
+                                            Tidak Ada
+                                         </option>
+                                    </select>
+                                </div>
+                                {{-- <div id="map-container" style="height:350px"></div> --}}
+                                {{-- <input type="hidden" name="longlat" id="longlat" value="{{ old('longlat',$lokasi->longlat??'') }}"> --}}
+                               
+                                <div class="form-group col-lg-12">
+                                    <p>Alamat</p>
+                                    <textarea id="alamat" name="alamat" class="form-control" required>{{ old('alamat',$lokasi->alamat??'') }}</textarea>
+                                </div>
                             </div>
-                            <div id="map-container" style="height:350px"></div>
-                            <input type="hidden" name="longlat" id="longlat" value="{{ old('longlat',$lokasi->longlat??'') }}">
-                            <br>
-                            <div class="form-group">
-                                <p>Keterangan</p>
-                                <textarea id="keterangan" name="keterangan" class="form-control" required>{{ old('keterangan',$lokasi->keterangan??'') }}</textarea>
-                            </div>
-
                             <button type="submit" class="mt-4 btn btn-primary">Simpan Data</button>
                         </form>
                     </div>
