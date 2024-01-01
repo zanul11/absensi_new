@@ -162,8 +162,8 @@ class ApiController extends Controller
                 'tgl' => $r->tanggal,
                 'masuk' => $r->jam_masuk,
                 'pulang' => $r->jam_pulang,
-                'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jam_masuk == null && $r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : 'Tepat Waktu')),
-                'keterangan' => ($r->is_telat == 1) ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : 'Tepat Waktu'),
+                'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jam_masuk == null && $r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
+                'keterangan' => ($r->is_telat == 1) ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : 'Tepat Waktu')),
 
             ];
         }
