@@ -1,9 +1,9 @@
 <table>
     <tr>
-        <td>No</td>
-        <td>NIP/NIK</td>
-        <td>Nama</td>
-        <td>No Hp</td>
-        <td>Alamat</td>
+        <td>no</td>
+        <td>nip</td>
+        <td>nama</td>
+        <td>nohp</td>
+        <td>alamat</td>
     </tr>
 </table>

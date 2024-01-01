@@ -47,7 +47,7 @@
 
                             <button type="submit" class="mt-4 btn btn-primary">Import</button>
                         </form>
-                        <a href="{{ route('pegawai.template') }}" class="mt-4 btn btn-success">Download Template Pegawai</a>
+                        <a href="{{ route('pegawai.template') }}" class="mt-4 btn btn-success">Download Template Pegawai (Excel)</a>
 
                     </div>
                 </div>
