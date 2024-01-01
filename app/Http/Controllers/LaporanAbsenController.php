@@ -44,7 +44,7 @@ class LaporanAbsenController extends Controller
             }
             $data_absen[] = $data;
         }
-        // return $data_absen;
+        return $data_absen;
         return view('pages.absensi.laporan_absen.index', compact('data_absen'))->with($this->data);
     }
 
