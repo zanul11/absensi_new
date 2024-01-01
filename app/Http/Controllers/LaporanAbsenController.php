@@ -29,7 +29,7 @@ class LaporanAbsenController extends Controller
         $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
         $pegawai = Pegawai::orderby('name')->get();
         $jenis_izin = JenisIzin::all();
-        $data_absen[] = [];
+        $data_absen = [];
         foreach ($pegawai as $peg) {
             $data['nip'] = $peg->nip;
             $data['nama'] = $peg->name;
@@ -44,7 +44,7 @@ class LaporanAbsenController extends Controller
             }
             $data_absen[] = $data;
         }
-        return $data_absen;
+        // return $data_absen;
         return view('pages.absensi.laporan_absen.index', compact('data_absen'))->with($this->data);
     }
 
