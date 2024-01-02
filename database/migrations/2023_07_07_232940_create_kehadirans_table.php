@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('kehadirans', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('pegawai_id')->constrained('pegawais');
-            $table->tinyInteger('jenis')->default(0)->comment("0:Masuk, 1:Pulang");
+            $table->tinyInteger('jenis')->default(0)->comment("0:Masuk, 1:Pulang, 2:keluar istirahat, 3:masuk istirahat");
             $table->date('tanggal');
             $table->foreignUuid('jenis_izin_id')->nullable()->constrained('jenis_izin');
             $table->string('keterangan')->nullable();

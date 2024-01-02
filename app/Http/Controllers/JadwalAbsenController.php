@@ -33,6 +33,8 @@ class JadwalAbsenController extends Controller
                     'jam_masuk_toleransi' => $request->jam_masuk_toleransi[$i],
                     'jam_pulang' => $request->jam_pulang[$i],
                     'jam_pulang_toleransi' => $request->jam_pulang_toleransi[$i],
+                    'jam_keluar_istirahat' => $request->jam_keluar_istirahat[$i],
+                    'jam_masuk_istirahat' => $request->jam_masuk_istirahat[$i],
                     'user' => Auth::user()->name,
                 ]);
             }

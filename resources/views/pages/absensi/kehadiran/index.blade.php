@@ -82,6 +82,11 @@
         serverSide: true,
         responsive: true,
         lengthChange: true,
+        pageLength: 100,
+        lengthMenu: [
+       
+        100, 250, 500, 'All'
+    ],
         ajax: "{!! route('kehadiran.data') !!}",
         columns: [{
                 data: 'id',

@@ -2,6 +2,10 @@
 
 @push('style')
 <link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
+
+
+
+
 @endpush
 @section('content')
 <div class="layout-px-spacing">
@@ -14,10 +18,12 @@
                     <a href="{{route('home')}}" class="mt-2 edit-profile">
                         <i data-feather="home"></i></a>
                 </div><br>
-                <form action="{{ route('jadwal_absen.store') }}" method="post" data-parsley-validate="true">
+                <form action="{{ route('jadwal_absen.store') }}" method="post" data-parsley-validate="true" >
                     @csrf
-                    <div class="row">
-                        @foreach (config('constants.hari') as $key => $item)
+                    @foreach (config('constants.hari') as $key => $item)
+                  
+                    <div class="row ">
+                      
                         @if(count($jadwalAbsen)>0)
                         @php
                         $status = $jadwalAbsen[$key]->status;
@@ -25,6 +31,8 @@
                         $jam_masuk_toleransi = $jadwalAbsen[$key]->jam_masuk_toleransi;
                         $jam_pulang = $jadwalAbsen[$key]->jam_pulang;
                         $jam_pulang_toleransi = $jadwalAbsen[$key]->jam_pulang_toleransi;
+                        $jam_keluar_istirahat = $jadwalAbsen[$key]->jam_keluar_istirahat;
+                        $jam_masuk_istirahat = $jadwalAbsen[$key]->jam_masuk_istirahat;
                         @endphp
                         @else
                         @php
@@ -33,14 +41,16 @@
                         $jam_masuk_toleransi = '';
                         $jam_pulang = '';
                         $jam_pulang_toleransi = '';
+                        $jam_keluar_istirahat = '';
+                        $jam_masuk_istirahat = '';
                         @endphp
                         @endif
-                        <div class="form-group col-lg-2">
-                            <p>Hari</p>
+                        <div class="form-group col-lg-6" >
+                            <p >Hari</p>
                             <input type="text" value="{{$item}}" class="form-control" disabled>
                             <input id="hari" type="hidden" name="hari[]" value="{{$key}}" class="form-control">
                         </div>
-                        <div class="form-group col-lg-2">
+                        <div class="form-group col-lg-6">
                             <p>Status Masuk</p>
                             <select class="form-control select2" data-live-search="false" name="status[]">
                                 <option value="0" {{($status==0)?"selected":""}}>Tidak</option>
@@ -56,6 +66,14 @@
                             <input class="form-control flatpickr flatpickr-input basicFlatpickr" value="{{(isset($jadwalAbsen))?date('H:i', strtotime($jam_masuk_toleransi)):''}}" type="text" name="jam_masuk_toleransi[]" required>
                         </div>
                         <div class="form-group col-lg-2">
+                            <p>Jam Keluar Istirahat</p>
+                            <input class="form-control flatpickr flatpickr-input basicFlatpickr" type="text" value="{{(isset($jadwalAbsen))?date('H:i', strtotime($jam_keluar_istirahat)):''}}" name="jam_keluar_istirahat[]" required>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <p>Jam Masuk Istirahat</p>
+                            <input class="form-control flatpickr flatpickr-input basicFlatpickr" type="text" value="{{(isset($jadwalAbsen))?date('H:i', strtotime($jam_masuk_istirahat)):''}}" name="jam_masuk_istirahat[]" required>
+                        </div>
+                        <div class="form-group col-lg-2">
                             <p>Jam Pulang</p>
                             <input class="form-control flatpickr flatpickr-input basicFlatpickr" type="text" value="{{(isset($jadwalAbsen))?date('H:i', strtotime($jam_pulang)):''}}" name="jam_pulang[]" required>
                         </div>
@@ -63,9 +81,10 @@
                             <p>Jam Pulang Toleransi</p>
                             <input class="form-control flatpickr flatpickr-input basicFlatpickr" type="text" value="{{(isset($jadwalAbsen))?date('H:i', strtotime($jam_pulang_toleransi)):''}}" name="jam_pulang_toleransi[]" required>
                         </div>
-                        @endforeach
-
+                        <hr>
+                    
                     </div>
+                    @endforeach
                     <button type="submit" class="mt-4 btn btn-primary">Simpan Data</button>
                 </form>
             </div>

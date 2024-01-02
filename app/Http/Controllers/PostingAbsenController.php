@@ -75,6 +75,11 @@ class PostingAbsenController extends Controller
                         "jam_pulang" => '00:00',
                         "is_pulang_cepat" => 0,
                         "user" => Auth::user()->name,
+                        "created_at" => date('Y-m-d H:i:s'),
+                        "updated_at" => date('Y-m-d H:i:s'),
+                        "jam_keluar_istirahat" => '00:00',
+                        "jam_masuk_istirahat" => '00:00',
+                        "is_telat_kembali" => 0,
                     ];
                 } else {
                     //jika hari kerja masuk status=1
@@ -94,12 +99,18 @@ class PostingAbsenController extends Controller
                             "jam_pulang" => '00:00',
                             "is_pulang_cepat" => 0,
                             "user" => Auth::user()->name,
+                            "created_at" => date('Y-m-d H:i:s'),
+                            "updated_at" => date('Y-m-d H:i:s'),
+                            "jam_keluar_istirahat" => '00:00',
+                            "jam_masuk_istirahat" => '00:00',
+                            "is_telat_kembali" => 0,
                         ];
                     } else {
                         //jika hari kerja normal
-                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->first(); //absen masuk jenis=0
+                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->first();
+                        //absen masuk jenis=0 atau masuk
                         if ($getAbsenMasuk) {
-                            //absen
+                            //jika ada absen
                             if (isset($getAbsenMasuk->jenis_izin_id)) {
                                 //jika izin dihari kerja
                                 $izin = JenisIzin::where('id', $getAbsenMasuk->jenis_izin_id)->first();
@@ -116,10 +127,17 @@ class PostingAbsenController extends Controller
                                     "jam_pulang" => '00:00',
                                     "is_pulang_cepat" => 0,
                                     "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => '00:00',
+                                    "jam_masuk_istirahat" => '00:00',
+                                    "is_telat_kembali" => 0,
                                 ];
                             } else {
                                 //jika masuk
                                 $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->first();
+                                $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
+                                $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
                                 $data[] = [
                                     "id" => Str::uuid(),
                                     "pegawai_id" => $peg->id,
@@ -133,11 +151,18 @@ class PostingAbsenController extends Controller
                                     "jam_pulang" => $getAbsenPulang->jam ?? null,
                                     "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
                                     "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
                                 ];
                             }
                         } else {
                             //tidak absen
                             $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->first();
+                            $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
+                            $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
                             if ($getAbsenPulang) {
                                 //tidak absen masuk tapi absen pulang
                                 // return $cekHariKerja->jam_pulang_toleransi;
@@ -154,6 +179,11 @@ class PostingAbsenController extends Controller
                                     "jam_pulang" => $getAbsenPulang->jam ?? null,
                                     "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
                                     "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
                                 ];
                             } else {
                                 $data[] = [
@@ -169,6 +199,11 @@ class PostingAbsenController extends Controller
                                     "jam_pulang" => '00:00',
                                     "is_pulang_cepat" => 1,
                                     "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
                                 ];
                             }
                         }

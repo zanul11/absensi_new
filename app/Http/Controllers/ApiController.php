@@ -67,6 +67,7 @@ class ApiController extends Controller
                     "nik" => $pegawai->nip,
                     "nama" => $pegawai->name,
                     'jadwal' => ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal->jam_pulang)),
+                    'istirahat' => ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal->jam_masuk_istirahat)),
                     "data_absen" => $data,
                     "hari" => Absensi::where('pegawai_id', $id)->where('hari', true)->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
                     "telat" => Absensi::where('pegawai_id', $id)->where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
@@ -100,8 +101,16 @@ class ApiController extends Controller
 
     public function insertAbsen($id, $location)
     {
-        // return Pegawai::where('id', $id)->first()->name;
-        if (date('H') > 6 && date('H') < 10) {
+        $jadwal = JadwalAbsen::where('hari', date('N'))->first();
+        if ($jadwal->status == 0) {
+            return response()->json([
+                'status' => 200,
+                'error' => true,
+                'data' => 'Hari Libur, Tidak Bisa Absen',
+            ]);
+        }
+        if (date('H') > 6 && date('H:i') < date('H:i', strtotime($jadwal->jam_keluar_istirahat))) {
+            //absen masuk
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
             if (!$cek_sudah_absen) {
                 Kehadiran::create([
@@ -113,6 +122,11 @@ class ApiController extends Controller
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
+                return response()->json([
+                    'status' => 200,
+                    'error' => false,
+                    'data' => 'Absen Masuk Berhasil',
+                ]);
             } else {
                 return response()->json([
                     'status' => 200,
@@ -120,7 +134,64 @@ class ApiController extends Controller
                     'data' => 'Sudah Absen Masuk!',
                 ]);
             }
-        } else if (date('H') >= 15 && date('H') <= 22) {
+        } else if (date('H:i') >= date('H:i', strtotime($jadwal->jam_keluar_istirahat)) && date('H:i') < date('H:i', strtotime('-30 minutes', strtotime($jadwal->jam_masuk_istirahat)))) {
+            //absen keluar istirahat
+            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 2)->first();
+            if (!$cek_sudah_absen) {
+                Kehadiran::create([
+                    'pegawai_id' => $id,
+                    'tanggal' => date('Y-m-d'),
+                    'jenis' => 2,
+                    'keterangan' => 'Absen Mobile',
+                    'jam' => date('H:i:s'),
+                    'location' => $location,
+                    'user' => Pegawai::where('id', $id)->first()->name
+                ]);
+                return response()->json([
+                    'status' => 200,
+                    'error' => false,
+                    'data' => 'Absen Keluar Berhasil!',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 200,
+                    'error' => true,
+                    'data' => 'Sudah Absen Keluar!',
+                ]);
+            }
+        } else if (date('H:i') >= date('H:i', strtotime('-30 minutes', strtotime($jadwal->jam_masuk_istirahat))) && date('H:i') <= date('H:i', strtotime($jadwal->jam_masuk_istirahat))) {
+            //absen masuk istirahat
+            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 3)->first();
+            if (!$cek_sudah_absen) {
+                Kehadiran::create([
+                    'pegawai_id' => $id,
+                    'tanggal' => date('Y-m-d'),
+                    'jenis' => 3,
+                    'keterangan' => 'Absen Mobile',
+                    'jam' => date('H:i:s'),
+                    'location' => $location,
+                    'user' => Pegawai::where('id', $id)->first()->name
+                ]);
+                return response()->json([
+                    'status' => 200,
+                    'error' => false,
+                    'data' => 'Absen Kembali Berhasil!',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 200,
+                    'error' => true,
+                    'data' => 'Sudah Absen Kembali!',
+                ]);
+            }
+        } else if (date('H:i') > date('H:i', strtotime($jadwal->jam_masuk_istirahat)) && date('H') < 15) {
+            return response()->json([
+                'status' => 200,
+                'error' => true,
+                'data' => 'Belum waktunya absen pulang!',
+            ]);
+        } else if (date('H') >= 15 && date('H') <= 23) {
+            //absen pulang
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
             if (!$cek_sudah_absen) {
                 Kehadiran::create([
@@ -131,6 +202,11 @@ class ApiController extends Controller
                     'jam' => date('H:i:s'),
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
+                ]);
+                return response()->json([
+                    'status' => 200,
+                    'error' => false,
+                    'data' => 'Absen Pulang Berhasil',
                 ]);
             } else {
                 return response()->json([
@@ -146,11 +222,6 @@ class ApiController extends Controller
                 'data' => 'Di luar jam absen!',
             ]);
         }
-        return response()->json([
-            'status' => 200,
-            'error' => false,
-            'data' => 'Absen Berhasil',
-        ]);
     }
 
     public function getHistoriAbsen($id, $tgl1, $tgl2)
