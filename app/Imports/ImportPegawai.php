@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Location;
 use App\Models\Pegawai;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,7 @@ class ImportPegawai implements ToCollection, WithHeadingRow
                 'user' =>  Auth::user()->name,
                 'created_at' => now(),
                 'updated_at' => now(),
-                'location_id' => null,
+                'location_id' => Location::first()->id,
             ];
         }
         Pegawai::insert($data);

@@ -7,6 +7,7 @@ use App\Models\JadwalAbsen;
 use App\Models\Kehadiran;
 use App\Models\Location;
 use App\Models\Pegawai;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -229,13 +230,24 @@ class ApiController extends Controller
         $absen = Absensi::with('jenis_izin')->where('pegawai_id', $id)->whereBetween('tanggal', [$tgl1, $tgl2])->orderBy('tanggal')->get();
         $data = [];
         foreach ($absen as $r) {
+            $jam_kerja = '-';
+
+            if ($r->is_telat == 1) {
+                $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
+                $completed_time = $r->jam_pulang ?? JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                $d1 = new DateTime($assigned_time);
+                $d2 = new DateTime($completed_time);
+                $interval = $d2->diff($d1);
+                $jam_kerja = $interval->format('%h Jam %i Menit');
+            }
+
             $data[] = [
                 'tgl' => $r->tanggal,
-                'masuk' => $r->jam_masuk,
+                'masuk' => $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat,
                 'pulang' => $r->jam_pulang,
                 'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jam_masuk == null && $r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
                 'keterangan' => ($r->is_telat == 1) ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : 'Tepat Waktu')),
-
+                'jam_kerja' => $jam_kerja,
             ];
         }
         return response()->json([

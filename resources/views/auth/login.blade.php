@@ -89,7 +89,7 @@
                                 </div>
                               
                                     <div class="text-center">
-                                        <a href="{{ asset('apk.apk') }}" class="btn btn-success" value="">Download APK</a>
+                                        <a href="{{ asset('apk2.apk') }}" class="btn btn-success" value="">Download APK</a>
                                     </div>
                              
                             </div>
