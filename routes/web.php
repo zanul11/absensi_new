@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsenPulangController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JadwalAbsenController;
@@ -8,9 +9,12 @@ use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\LaporanAbsenController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\PengajuanAbsenController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\PostingAbsenController;
+use App\Http\Controllers\RequestAbsenPulangController;
 use App\Http\Controllers\TglLiburController;
+use App\Models\AbsenPulang;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +60,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('kehadiran/data', [KehadiranController::class, 'data'])
         ->name('kehadiran.data');
     Route::resource('kehadiran', KehadiranController::class);
+
+    Route::get('request_absen_pulang/data', [RequestAbsenPulangController::class, 'data'])
+        ->name('request_absen_pulang.data');
+    Route::resource('request_absen_pulang', RequestAbsenPulangController::class);
 
     Route::resource('posting_absen', PostingAbsenController::class);
     Route::resource('laporan_absen', LaporanAbsenController::class);
