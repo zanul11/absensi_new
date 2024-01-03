@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/datatables.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/dt-global_style.css')}}">
 <link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
+   
 @endpush
 @section('content')
 <div class="layout-px-spacing">
@@ -31,7 +32,7 @@
                 </form>
 
                 <div class="table-responsive">
-                    <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
+                    <table id="datatable" class="table table-hover">
                         <thead>
                             <tr>
                                 <th style="width: 5%">#</th>
@@ -40,6 +41,7 @@
                                 <th>Absen</th>
                                 <th>Jam</th>
                                 <th>Keterangan</th>
+                                <th>Foto</th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -54,14 +56,16 @@
 </div>
 
 @endsection
-<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> -->
-<!-- <script src="{{asset('plugins/table/datatable/datatables.js')}}"></script> -->
+
 @push('scripts')
 @include('inc.swal-delete')
 
 <script src="{{asset('plugins/flatpickr/flatpickr.js')}}"></script>
 <script src="{{asset('plugins/table/datatable/datatables.js')}}"></script>
+
+
 <script>
+  
     $(".basicFlatpickr").flatpickr({
         mode: "range",
         dateFormat: "d-m-Y",
@@ -97,8 +101,10 @@
             },
             {
                 data: 'tanggal',
-                name: 'tanggal'
-            }, {
+                name: 'tanggal',
+               
+            }, 
+            {
                 data: 'pegawai.name',
                 name: 'pegawai.name'
             }, {
@@ -111,6 +117,10 @@
             }, {
                 data: 'keterangan',
                 name: 'keterangan'
+            },
+            {
+                data: 'link',
+                name: 'link'
             },
             {
                 data: 'action',

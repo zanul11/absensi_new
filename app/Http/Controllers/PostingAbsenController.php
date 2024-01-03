@@ -107,7 +107,7 @@ class PostingAbsenController extends Controller
                         ];
                     } else {
                         //jika hari kerja normal
-                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->first();
+                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('jam_masuk', 'asc')->first();
                         //absen masuk jenis=0 atau masuk
                         if ($getAbsenMasuk) {
                             //jika ada absen
@@ -135,7 +135,7 @@ class PostingAbsenController extends Controller
                                 ];
                             } else {
                                 //jika masuk
-                                $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->first();
+                                $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('jam_pulang', 'desc')->first();
                                 $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
                                 $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
                                 $data[] = [
@@ -160,7 +160,7 @@ class PostingAbsenController extends Controller
                             }
                         } else {
                             //tidak absen
-                            $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->first();
+                            $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('jam_pulang', 'desc')->first();
                             $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
                             $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
                             if ($getAbsenPulang) {

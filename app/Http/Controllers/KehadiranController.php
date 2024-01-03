@@ -24,16 +24,23 @@ class KehadiranController extends Controller
             $to = date('Y-m-d', strtotime(Cache::get('sTgl')));
             $data =  Kehadiran::query()->with('pegawai', 'jenis_izin')
                 ->whereBetween('tanggal', [$from, $to])
-                ->select(['*']);
+                ->select(['*'])->orderBy('tanggal', 'desc');
         } else {
             $data =  Kehadiran::query()->with('pegawai', 'jenis_izin')
-                ->select(['*']);
+                ->select(['*'])->orderBy('tanggal', 'desc');;
         }
 
 
         return DataTables::of($data)
             ->addColumn('absen', function ($data) {
                 return ($data->jenis_izin) ? $data->jenis_izin?->name : (($data->jenis == 0) ? 'Masuk' : (($data->jenis == 1) ? 'Pulang' : (($data->jenis == 2) ? 'Keluar (Istirahat)' : 'Kembali (Istirahat)')));
+            })
+            ->addColumn('link', function ($data) {
+                if ($data->getFirstMediaUrl('absen')) {
+                    return "<a data-fancybox='images'  href='" . $data->getFirstMediaUrl('absen') . "' class='text-success' title='Lihat Image' target='_blank'><img src='{$data->getFirstMediaUrl("absen")}' alt='' width='100' height='70'></a>";
+                } else {
+                    return '-';
+                }
             })
             ->addColumn('action', function ($data) {
 
@@ -48,7 +55,7 @@ class KehadiranController extends Controller
                 else
                     return '';
             })
-            ->rawColumns(['action',  'absen'])
+            ->rawColumns(['action',  'absen', 'link'])
             ->make(true);
     }
 

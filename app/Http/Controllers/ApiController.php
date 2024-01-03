@@ -100,8 +100,9 @@ class ApiController extends Controller
         ]);
     }
 
-    public function insertAbsen($id, $location)
+    public function insertAbsen(Request $request, $id, $location)
     {
+        // return $location;
         $jadwal = JadwalAbsen::where('hari', date('N'))->first();
         if ($jadwal->status == 0) {
             return response()->json([
@@ -114,7 +115,7 @@ class ApiController extends Controller
             //absen masuk
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
             if (!$cek_sudah_absen) {
-                Kehadiran::create([
+                $hadir = Kehadiran::create([
                     'pegawai_id' => $id,
                     'tanggal' => date('Y-m-d'),
                     'jenis' => 0,
@@ -123,6 +124,13 @@ class ApiController extends Controller
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
+                if ($request->hasFile('file')) {
+                    $hadir->getFirstMedia('absen')?->delete();
+                    $hadir
+                        ->addMediaFromRequest('file')
+                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                        ->toMediaCollection('absen');
+                }
                 return response()->json([
                     'status' => 200,
                     'error' => false,
@@ -195,7 +203,7 @@ class ApiController extends Controller
             //absen pulang
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
             if (!$cek_sudah_absen) {
-                Kehadiran::create([
+                $hadir = Kehadiran::create([
                     'pegawai_id' => $id,
                     'tanggal' => date('Y-m-d'),
                     'jenis' => 1,
@@ -204,6 +212,13 @@ class ApiController extends Controller
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
+                if ($request->hasFile('file')) {
+                    $hadir->getFirstMedia('absen')?->delete();
+                    $hadir
+                        ->addMediaFromRequest('file')
+                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                        ->toMediaCollection('absen');
+                }
                 return response()->json([
                     'status' => 200,
                     'error' => false,

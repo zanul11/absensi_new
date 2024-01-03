@@ -35,7 +35,7 @@ class RequestAbsenPulangController extends Controller
                 return ($data->status == 0) ? '<span class="badge badge-warning"> Menunggu Verifikasi </span>' : (($data->status == 1) ? '<span class="badge badge-success"> Diterima </span>' : '<span class="badge badge-danger"> Ditolak </span>');
             })
             ->addColumn('link', function ($data) {
-                return "<a href='" . $data->getFirstMediaUrl('absen_pulang') . "' class='text-success' title='Lihat Image' target='_blank'><img src='{$data->getFirstMediaUrl("absen_pulang")}' alt='' width='100' height='70'></a>";
+                return "<a data-fancybox='gallery' href='" . $data->getFirstMediaUrl('absen_pulang') . "' class='text-success' title='Lihat Image' target='_blank'><img src='{$data->getFirstMediaUrl("absen_pulang")}' alt='' width='100' height='70'></a>";
             })
             ->addColumn('action', function ($data) {
                 if ($data->status == 0) {
