@@ -120,6 +120,7 @@ class KehadiranController extends Controller
      */
     public function destroy(Kehadiran $kehadiran)
     {
-        //
+        $kehadiran->getFirstMedia('absen')?->delete();
+        $kehadiran->delete();
     }
 }
