@@ -4,6 +4,27 @@
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/datatables.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/dt-global_style.css')}}">
 <link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
+<style>
+            .zoom-without-container {
+                transition: transform .2s;
+                /* Animation */
+                margin: 0 auto;
+            }
+
+            .zoom-without-container img {
+                width: 100%;
+                height: auto;
+            }
+
+            .zoom-without-container:active {
+                transform: scale(10);
+                /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+                z-index: 3000;
+                position: absolute;
+                padding-top: 30px;
+                padding-bottom: 20px;
+            }
+        </style>
 @endpush
 @section('content')
 <div class="layout-px-spacing">
