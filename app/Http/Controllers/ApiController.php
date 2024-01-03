@@ -147,7 +147,7 @@ class ApiController extends Controller
             //absen keluar istirahat
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 2)->first();
             if (!$cek_sudah_absen) {
-                Kehadiran::create([
+                $hadir =  Kehadiran::create([
                     'pegawai_id' => $id,
                     'tanggal' => date('Y-m-d'),
                     'jenis' => 2,
@@ -156,6 +156,13 @@ class ApiController extends Controller
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
+                if ($request->hasFile('file')) {
+                    $hadir->getFirstMedia('absen')?->delete();
+                    $hadir
+                        ->addMediaFromRequest('file')
+                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                        ->toMediaCollection('absen');
+                }
                 return response()->json([
                     'status' => 200,
                     'error' => false,
@@ -172,7 +179,7 @@ class ApiController extends Controller
             //absen masuk istirahat
             $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 3)->first();
             if (!$cek_sudah_absen) {
-                Kehadiran::create([
+                $hadir =  Kehadiran::create([
                     'pegawai_id' => $id,
                     'tanggal' => date('Y-m-d'),
                     'jenis' => 3,
@@ -181,6 +188,13 @@ class ApiController extends Controller
                     'location' => $location,
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
+                if ($request->hasFile('file')) {
+                    $hadir->getFirstMedia('absen')?->delete();
+                    $hadir
+                        ->addMediaFromRequest('file')
+                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                        ->toMediaCollection('absen');
+                }
                 return response()->json([
                     'status' => 200,
                     'error' => false,
