@@ -61,7 +61,7 @@
                                 <th>Keterangan</th>
                                 <th>Status</th>
                                 <th>Link</th>
-                                <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
+                                <th style="width: 10% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

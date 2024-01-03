@@ -63,6 +63,8 @@ Route::middleware('auth:web')->group(function () {
 
     Route::get('request_absen_pulang/data', [RequestAbsenPulangController::class, 'data'])
         ->name('request_absen_pulang.data');
+    Route::post('request_absen_pulang/verifikasi', [RequestAbsenPulangController::class, 'verifikasi'])
+        ->name('request_absen_pulang.verifikasi');
     Route::resource('request_absen_pulang', RequestAbsenPulangController::class);
 
     Route::resource('posting_absen', PostingAbsenController::class);

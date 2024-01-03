@@ -12,7 +12,7 @@
             <div class="widget-content widget-content-area">
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
-                    <h3 class="">Form Request Absen Pulang (Luar Lokasi)</h3>
+                    <h3 class="">Verifikasi Request Absen Pulang (Luar Lokasi)</h3>
                     <a href="{{route('request_absen_pulang.index')}}" class="mt-2 edit-profile">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -36,25 +36,20 @@
                         @endisset
 
 
-                        <form action="{{ request()->routeIs('request_absen_pulang.create')?route('request_absen_pulang.store') : route('request_absen_pulang.update',$requestAbsenPulang) }}" method="post" data-parsley-validate="true" enctype="multipart/form-data">
+                        <form action="{{  route('request_absen_pulang.verifikasi') }}" method="post" data-parsley-validate="true" >
                             @csrf
-                            @if (request()->routeIs('request_absen_pulang.create'))
-                            @method('post')
-                            @else
-                            @method('put')
-                            @endif
                             <div class="row">
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">
                                     <p>Tanggal</p>
-                                    <input value="{{ old('tanggal',date('d-m-Y', strtotime($requestAbsenPulang->tanggal??date('d-m-Y')))) }}" name="tanggal" class="form-control flatpickr flatpickr-input active basicFlatpickr" type="text" placeholder="Select Date..">
+                                    <input value="{{ old('tanggal',date('d-m-Y', strtotime($requestAbsenPulang->tanggal??date('d-m-Y')))) }}" name="tanggal" class="form-control flatpickr flatpickr-input active basicFlatpickr" type="text" placeholder="Select Date.." disabled>
                                 </div>
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">
                                     <p>Jam Pulang </p>
-                                    <input class="form-control flatpickr flatpickr-input basicFlatpickrJam" value="{{ old('jam',date('H:i', strtotime($requestAbsenPulang->jam??date('H:i')))) }}" type="text" name="jam">
+                                    <input class="form-control flatpickr flatpickr-input basicFlatpickrJam" value="{{ old('jam',date('H:i', strtotime($requestAbsenPulang->jam??date('H:i')))) }}" type="text" name="jam" disabled>
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Pegawai</p>
-                                    <select class="form-control select2" data-live-search="true" name="pegawai_id" required>
+                                    <select class="form-control select2" data-live-search="true" name="pegawai_id" disabled>
                                         <option value="">Pilih Pegawai</option>
 
                                         @foreach ($pegawai as $key => $dt)
@@ -64,17 +59,28 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Keterangan</p>
-                                    <textarea id="keterangan" name="keterangan" class="form-control" required>{{ old('keterangan',$requestAbsenPulang->keterangan??'') }}</textarea>
+                                    <textarea id="keterangan" name="keterangan" class="form-control" disabled>{{ old('keterangan',$requestAbsenPulang->keterangan??'') }}</textarea>
                                 </div>
-                                <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Foto</p>
-                                    <input class="form-control"  type="file" name="file">
+                                   <img class="text-center" src="{{$requestAbsenPulang->getFirstMediaUrl('absen_pulang')?asset($requestAbsenPulang->getFirstMediaUrl('absen_pulang')):''}}" width="25%">
+                                </div>
+                                <input type="hidden" name="id" value="{{$requestAbsenPulang->id}}">
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
+                                    <p>Status</p>
+                                    <select class="form-control " data-live-search="false" name="status">
+                                        <option value="1" {{(old('jenis',$requestAbsenPulang->status??'')==1)?"selected":""}}>Terima</option>
+                                        <option value="2" {{(old('jenis',$requestAbsenPulang->status??'')==2)?"selected":""}}>Tolak</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-8 col-md-12 col-xs-12">
+                                    <p>Alasan</p>
+                                    <textarea id="alasan" name="alasan" class="form-control" required>{{ old('alasan',$requestAbsenPulang->alasan??'') }}</textarea>
                                 </div>
                             </div>
-
-
+                           
                             <button type="submit" class="mt-4 btn btn-primary">Simpan Data</button>
                         </form>
                     </div>
