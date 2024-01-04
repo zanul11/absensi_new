@@ -41,15 +41,29 @@
                             <div class="row">
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">
                                     <p>Tanggal</p>
-                                    <input value="{{ old('tanggal',date('d-m-Y', strtotime($requestAbsenPulang->tanggal??date('d-m-Y')))) }}" name="tanggal" class="form-control flatpickr flatpickr-input active basicFlatpickr" type="text" placeholder="Select Date.." disabled>
+                                    <input value="{{ old('tanggal',date('d-m-Y', strtotime($requestAbsenPulang->tanggal??date('d-m-Y')))) }}" name="tanggal" class="form-control flatpickr flatpickr-input active basicFlatpickr" type="text" placeholder="Select Date..">
+                                </div>
+                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
+                                    <p>Jam </p>
+                                    <input class="form-control flatpickr flatpickr-input basicFlatpickrJam" value="{{ old('jam',date('H:i', strtotime($requestAbsenPulang->tanggal??date('H:i')))) }}" type="text" name="jam">
                                 </div>
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">
-                                    <p>Jam Pulang </p>
-                                    <input class="form-control flatpickr flatpickr-input basicFlatpickrJam" value="{{ old('jam',date('H:i', strtotime($requestAbsenPulang->jam??date('H:i')))) }}" type="text" name="jam" disabled>
+                                    <p>Jenis Request</p>
+                                    <select class="form-control " data-live-search="false" name="jenis" readonly>
+                                        <option value="1" {{ old('jenis',$requestAbsenPulang->jenis??'')==1 ? 'selected' : '' }}>
+                                            Absen Pulang
+                                        </option>
+                                        <option value="2" {{ old('jenis',$requestAbsenPulang->jenis??'')==2 ? 'selected' : '' }}>
+                                            Absen Keluar
+                                        </option>
+                                        <option value="3" {{ old('jenis',$requestAbsenPulang->jenis??'')==3 ? 'selected' : '' }}>
+                                            Absen Kembali
+                                        </option>
+                                    </select>
                                 </div>
-                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
                                     <p>Pegawai</p>
-                                    <select class="form-control select2" data-live-search="true" name="pegawai_id" disabled>
+                                    <select class="form-control " data-live-search="true" name="pegawai_id" readonly>
                                         <option value="">Pilih Pegawai</option>
 
                                         @foreach ($pegawai as $key => $dt)
@@ -59,13 +73,15 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-8 col-md-12 col-xs-12">
                                     <p>Keterangan</p>
                                     <textarea id="keterangan" name="keterangan" class="form-control" disabled>{{ old('keterangan',$requestAbsenPulang->keterangan??'') }}</textarea>
                                 </div>
-                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
                                     <p>Foto</p>
-                                   <img class="text-center" src="{{$requestAbsenPulang->getFirstMediaUrl('absen_pulang')?asset($requestAbsenPulang->getFirstMediaUrl('absen_pulang')):''}}" width="25%">
+                                    <a data-fancybox='gallery' href="{{$requestAbsenPulang->getFirstMediaUrl('absen_pulang')?asset($requestAbsenPulang->getFirstMediaUrl('absen_pulang')):''}}">
+                                   <img  class="text-center" src="{{$requestAbsenPulang->getFirstMediaUrl('absen_pulang')?asset($requestAbsenPulang->getFirstMediaUrl('absen_pulang')):''}}" width="25%">
+                                </a>
                                 </div>
                                 <input type="hidden" name="id" value="{{$requestAbsenPulang->id}}">
                                 <div class="form-group col-lg-4 col-md-12 col-xs-12">

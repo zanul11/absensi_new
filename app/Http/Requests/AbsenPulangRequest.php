@@ -19,6 +19,7 @@ class AbsenPulangRequest extends FormRequest
         return [
             "pegawai_id" => ["required", "exists:pegawais,id"],
             "tanggal" => ["date_format:Y-m-d H:i", "string"],
+            "jenis" => ["required", "numeric"],
             "keterangan" => ["required", "string"],
             "file" => ["required", "mimes:jpg,png", "max:1024"],
             "user" => ["required", "string"],

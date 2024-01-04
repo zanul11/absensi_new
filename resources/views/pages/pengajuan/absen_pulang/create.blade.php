@@ -48,11 +48,25 @@
                                     <p>Tanggal</p>
                                     <input value="{{ old('tanggal',date('d-m-Y', strtotime($requestAbsenPulang->tanggal??date('d-m-Y')))) }}" name="tanggal" class="form-control flatpickr flatpickr-input active basicFlatpickr" type="text" placeholder="Select Date..">
                                 </div>
-                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
-                                    <p>Jam Pulang </p>
+                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
+                                    <p>Jam </p>
                                     <input class="form-control flatpickr flatpickr-input basicFlatpickrJam" value="{{ old('jam',date('H:i', strtotime($requestAbsenPulang->jam??date('H:i')))) }}" type="text" name="jam">
                                 </div>
-                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
+                                    <p>Jenis Request</p>
+                                    <select class="form-control " data-live-search="false" name="jenis">
+                                        <option value="1" {{ old('jenis',$requestAbsenPulang->jenis??'')==1 ? 'selected' : '' }}>
+                                            Absen Pulang
+                                        </option>
+                                        <option value="2" {{ old('jenis',$requestAbsenPulang->jenis??'')==2 ? 'selected' : '' }}>
+                                            Absen Keluar
+                                        </option>
+                                        <option value="3" {{ old('jenis',$requestAbsenPulang->jenis??'')==3 ? 'selected' : '' }}>
+                                            Absen Kembali
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
                                     <p>Pegawai</p>
                                     <select class="form-control select2" data-live-search="true" name="pegawai_id" required>
                                         <option value="">Pilih Pegawai</option>

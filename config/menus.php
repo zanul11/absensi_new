@@ -88,9 +88,9 @@ return [
             'caret' => true,
             'sub_menu' => [
                 [
-                    'id' => 'absen pulang',
+                    'id' => 'absen',
                     'url' => 'request_absen_pulang',
-                    'title' => 'absen pulang'
+                    'title' => 'absen'
                 ]
             ]
         ],

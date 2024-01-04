@@ -26,14 +26,17 @@ class RequestAbsenPulangController extends Controller
             $data =  RequestAbsenPulang::query()->with('pegawai')
                 // ->whereBetween('tanggal', [$from, $to])
                 ->whereBetween(DB::raw('DATE(tanggal)'), array($from, $to))
-                ->select(['*']);
+                ->select(['*'])->orderBy('tanggal', 'desc')->orderBy('status', 'asc');
         } else {
             $data =  RequestAbsenPulang::query()->with('pegawai')
-                ->select(['*']);
+                ->select(['*'])->orderBy('tanggal', 'desc')->orderBy('status', 'asc');;
         }
         return DataTables::of($data)
             ->editColumn('status', function ($data) {
                 return ($data->status == 0) ? '<span class="badge badge-warning"> Menunggu Verifikasi </span>' : (($data->status == 1) ? '<span class="badge badge-success"> Diterima </span>' : '<span class="badge badge-danger"> Ditolak </span>');
+            })
+            ->editColumn('jenis', function ($data) {
+                return ($data->status == 1) ? 'Absen Pulang' : (($data->status == 2) ? 'Absen Keluar' : 'Absen Kembali');
             })
             ->addColumn('link', function ($data) {
                 return "<a data-fancybox='gallery' href='" . $data->getFirstMediaUrl('absen_pulang') . "' class='text-success' title='Lihat Image' target='_blank'><img src='{$data->getFirstMediaUrl("absen_pulang")}' alt='' width='100' height='70'></a>";
@@ -141,7 +144,7 @@ class RequestAbsenPulangController extends Controller
     }
     public function verifikasi(Request $req)
     {
-        // return $req;
+
         $data = RequestAbsenPulang::where('id', $req->id)->first();
         $data->status = $req->status;
         $data->alasan = $req->alasan;
@@ -151,10 +154,10 @@ class RequestAbsenPulangController extends Controller
             $hadir = Kehadiran::create([
                 'pegawai_id' => $data->pegawai_id,
                 'tanggal' => date('Y-m-d', strtotime($data->tanggal)),
-                'jenis' => 1,
+                'jenis' => $data->jenis,
                 'keterangan' => 'Absen Mobile (Request)',
                 'jam' => date('H:i:s', strtotime($data->tanggal)),
-                'location' => 'Luar lokasi absen (request absen pulang)',
+                'location' => 'Luar lokasi absen (request absen)',
                 'user' => auth()->user()->name
             ]);
         }

@@ -107,7 +107,7 @@ class PostingAbsenController extends Controller
                         ];
                     } else {
                         //jika hari kerja normal
-                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('jam_masuk', 'asc')->first();
+                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('tanggal', 'asc')->first();
                         //absen masuk jenis=0 atau masuk
                         if ($getAbsenMasuk) {
                             //jika ada absen

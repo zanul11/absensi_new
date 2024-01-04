@@ -33,7 +33,7 @@
             <div class="widget-content widget-content-area">
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
-                    <h3 class="">Data {{ucwords($page_name)}}</h3>
+                    <h3 class="">Data Request Absen</h3>
                     <a href="{{route('request_absen_pulang.create')}}" class="mt-2 edit-profile">
                         <i data-feather="plus"></i></a>
                 </div>
@@ -57,10 +57,11 @@
                             <tr>
                                 <th style="width: 5%">#</th>
                                 <th>Tanggal</th>
+                                <th>Jenis </th>
                                 <th>Pegawai </th>
                                 <th>Keterangan</th>
                                 <th>Status</th>
-                                <th>Link</th>
+                                <th>Foto</th>
                                 <th style="width: 10% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -119,7 +120,12 @@
             {
                 data: 'tanggal',
                 name: 'tanggal'
-            }, {
+            },
+            {
+                data: 'jenis',
+                name: 'jenis'
+            },
+            {
                 data: 'pegawai.name',
                 name: 'pegawai.name'
             }, {
