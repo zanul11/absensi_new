@@ -48,7 +48,7 @@
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                         <circle cx="12" cy="7" r="4"></circle>
                                     </svg>
-                                    <input id="username" type="username" placeholder="username" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
+                                    <input id="username" type="username" placeholder="Username" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
 
                                     @error('username')
                                     <span class="invalid-feedback" role="alert">
@@ -89,7 +89,7 @@
                                 </div>
                               
                                     <div class="text-center">
-                                        <a href="{{ asset('apk2.apk') }}" class="btn btn-success" value="">Download APK</a>
+                                        <a href="{{ asset('apk3.apk') }}" class="btn btn-success" value="">Download APK</a>
                                     </div>
                              
                             </div>
