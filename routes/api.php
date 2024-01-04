@@ -27,3 +27,6 @@ Route::get('getAbsenPegawai/{id}', [ApiController::class, 'getAbsenPegawai']);
 Route::get('getLokasi', [ApiController::class, 'getLokasi']);
 Route::get('getRincianAbsen/{id}', [ApiController::class, 'getRincianAbsen']);
 Route::get('getHistoriAbsen/{id}/{tgl1}/{tgl2}', [ApiController::class, 'getHistoriAbsen']);
+Route::post('insertAbsenPulang/{id}', [ApiController::class, 'insertAbsenPulang']);
+
+Route::get('getRequestAbsenPulang/{id}', [ApiController::class, 'getRequestAbsenPulang']);

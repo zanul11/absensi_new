@@ -7,6 +7,7 @@ use App\Models\JadwalAbsen;
 use App\Models\Kehadiran;
 use App\Models\Location;
 use App\Models\Pegawai;
+use App\Models\RequestAbsenPulang;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -284,5 +285,46 @@ class ApiController extends Controller
             'error' => false,
             'data' => $data
         ]);
+    }
+
+    public function getRequestAbsenPulang($id)
+    {
+        return response()->json([
+            'response_code' => 200,
+            'message' => 'Success',
+            'data' => RequestAbsenPulang::with('media')->where('pegawai_id', $id)->orderBy('tanggal', 'desc')->get()
+        ]);
+    }
+
+
+    public function insertAbsenPulang(Request $request, $id)
+    {
+        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->first();
+        if (!$cek_sudah_absen) {
+            $hadir =  RequestAbsenPulang::create([
+                'pegawai_id' => $id,
+                'tanggal' => date('Y-m-d H:i:s'),
+                'keterangan' => $request->keterangan,
+                'user' => $id
+            ]);
+            if ($request->hasFile('file')) {
+                $hadir->getFirstMedia('absen_pulang')?->delete();
+                $hadir
+                    ->addMediaFromRequest('file')
+                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                    ->toMediaCollection('absen_pulang');
+            }
+            return response()->json([
+                'status' => 200,
+                'error' => false,
+                'data' => 'Request Absen Pulang Berhasil!',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'error' => true,
+                'data' => 'Sudah Request Absen Pulang!',
+            ]);
+        }
     }
 }

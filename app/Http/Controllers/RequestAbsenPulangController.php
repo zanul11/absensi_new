@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AbsenPulangRequest;
+use App\Models\Kehadiran;
 use App\Models\Pegawai;
 use App\Models\RequestAbsenPulang;
 use Illuminate\Support\Facades\Cache;
@@ -145,6 +146,18 @@ class RequestAbsenPulangController extends Controller
         $data->status = $req->status;
         $data->alasan = $req->alasan;
         $data->verified_at = date('Y-m-d H:i:s');
+        $data->user = auth()->user()->name;
+        if ($data->status == 1) {
+            $hadir = Kehadiran::create([
+                'pegawai_id' => $data->pegawai_id,
+                'tanggal' => date('Y-m-d', strtotime($data->tanggal)),
+                'jenis' => 1,
+                'keterangan' => 'Absen Mobile (Request)',
+                'jam' => date('H:i:s', strtotime($data->tanggal)),
+                'location' => 'Luar lokasi absen (request absen pulang)',
+                'user' => auth()->user()->name
+            ]);
+        }
         $data->save();
         alert()->success('Success', 'Data berhasil diupdate!');
         return redirect()->route('request_absen_pulang.index');
