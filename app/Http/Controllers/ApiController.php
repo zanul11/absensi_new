@@ -299,11 +299,12 @@ class ApiController extends Controller
 
     public function insertAbsenPulang(Request $request, $id)
     {
-        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->first();
+        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
         if (!$cek_sudah_absen) {
             $hadir =  RequestAbsenPulang::create([
                 'pegawai_id' => $id,
                 'tanggal' => date('Y-m-d H:i:s'),
+                'jenis' => $request->jenis,
                 'keterangan' => $request->keterangan,
                 'user' => $id
             ]);
@@ -317,13 +318,13 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 200,
                 'error' => false,
-                'data' => 'Request Absen Pulang Berhasil!',
+                'data' => 'Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali') . ' Berhasil!',
             ]);
         } else {
             return response()->json([
                 'status' => 200,
                 'error' => true,
-                'data' => 'Sudah Request Absen Pulang!',
+                'data' => 'Sudah Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali'),
             ]);
         }
     }
