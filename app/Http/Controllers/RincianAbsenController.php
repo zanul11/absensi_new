@@ -74,7 +74,7 @@ class RincianAbsenController extends Controller
                 'data' => $data_absen
             ];
         }
-          $data=collect($data);
+         return $data=collect($data);
         
         return view('pages.absensi.rincian_absen.index', compact('data', 'jenis_izin'))->with($this->data);
     }
