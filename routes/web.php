@@ -13,6 +13,7 @@ use App\Http\Controllers\PengajuanAbsenController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\PostingAbsenController;
 use App\Http\Controllers\RequestAbsenPulangController;
+use App\Http\Controllers\RincianAbsenController;
 use App\Http\Controllers\TglLiburController;
 use App\Models\AbsenPulang;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +70,7 @@ Route::middleware('auth:web')->group(function () {
 
     Route::resource('posting_absen', PostingAbsenController::class);
     Route::resource('laporan_absen', LaporanAbsenController::class);
+    Route::resource('rincian_absen', RincianAbsenController::class);
 
     Route::resource('informasi', HomeController::class);
 });

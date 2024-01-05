@@ -59,24 +59,26 @@
                         @foreach ($jenis_izin as $izin)
                         <th>{{ $izin->name }}</th>
                         @endforeach
+                        <th>Jam Kerja</th>
                         <th>%</th>
                     </tr>
 
                 </thead>
                 <tbody>
                     @foreach($data_absen as $data)
-                    <tr align="center">
-                        <td>{{$loop->iteration}}</td>
-                        <td>{{$data['nip']}}</td>
-                        <td>{{$data['nama']}}</td>
-                        <td>{{$data['jam_kerja']}}</td>
-                        <td>{{$data['kehadiran']}}</td>
-                        <td>{{$data['telat']}}</td>
-                        <td>{{$data['tanpa_keterangan']}}</td>
+                    <tr >
+                        <td align="center">{{$loop->iteration}}</td>
+                        <td align="center">{{$data['nip']}}</td>
+                        <td align="center">{{$data['nama']}}</td>
+                        <td align="center">{{$data['jam_kerja']}}</td>
+                        <td align="center">{{$data['kehadiran']}}</td>
+                        <td align="center">{{$data['telat']}}</td>
+                        <td align="center">{{$data['tanpa_keterangan']}}</td>
                         @foreach ($jenis_izin as $izin) 
-                            <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
+                            <td align="center">{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
                         @endforeach
-                        <td>{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
+                        <td align="center">{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
+                        <td align="center">{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
                     </tr>
                     @endforeach
                 </tbody>

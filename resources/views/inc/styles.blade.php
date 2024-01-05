@@ -19,6 +19,7 @@
 <link href="{{asset('assets/css/scrollspyNav.css')}}" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="{{asset('plugins/font-icons/fontawesome/css/regular.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/elements/alert.css')}}">
+
 <style>
   .btn-light {
     border-color: transparent;

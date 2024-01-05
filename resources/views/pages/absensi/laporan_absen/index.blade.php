@@ -45,6 +45,7 @@
                                 @foreach ($jenis_izin as $izin)
                                 <th>{{ $izin->name }}</th>
                                 @endforeach
+                                <th>Jam Kerja</th>
                                 <th>Persentase</th>
                             </tr>
                         </thead>
@@ -61,6 +62,7 @@
                                 @foreach ($jenis_izin as $izin) 
                                     <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
                                 @endforeach
+                                <td>{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
                                 <td>{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
                             </tr>
                             @endforeach

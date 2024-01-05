@@ -77,6 +77,11 @@ return [
                     'id' => 'laporan absen',
                     'url' => 'laporan_absen',
                     'title' => 'laporan absen'
+                ],
+                [
+                    'id' => 'rincian absen',
+                    'url' => 'rincian_absen',
+                    'title' => 'rincian absen'
                 ]
             ]
         ],
