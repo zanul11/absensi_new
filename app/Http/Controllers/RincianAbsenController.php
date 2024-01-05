@@ -37,32 +37,35 @@ class RincianAbsenController extends Controller
             $data_absen = [];
             $absen = Absensi::with('jenis_izin')->where('pegawai_id', $peg->id)->whereBetween('tanggal', [$from, $to])->orderBy('tanggal')->get();
             foreach ($absen as $r) {
-                $jam_kerja = '-';
+                $jam_kerja = '0 Jam 0 Menit';
                 $diff_mins = 0;
                
-                $assigned_time = ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
-                $d1 = new DateTime($assigned_time);
-                $d2 = new DateTime($completed_time);
-                $interval = $d2->diff($d1);
-                $jam_kerja = $interval->format('%H Jam %i Menit');
-                $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
+                if($r->keterangan != 'Tidak Absen'){
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? '00:00:00';
+                    $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                    $d1 = new DateTime($assigned_time);
+                    $d2 = new DateTime($completed_time);
+                    $interval = $d2->diff($d1);
+                    $jam_kerja = $interval->format('%H Jam %i Menit');
+                    $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
+                }
                 
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    'masuk' => ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat,
+                    // 'masuk' =>($r->keterangan=='Tidak Absen')?null :(($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat),
+                    'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
                     'kembali' => $r->jam_kembali_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
-                    'keterangan' => ($r->is_telat == 1) ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : 'Tepat Waktu')),
+                    'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
                     'd1'=> $assigned_time,
                     'd2'=> $completed_time,
                     'jam_kerja' => $jam_kerja,
                     'menit' => $diff_mins
                 ];
             }
-            //  return $data_absen;
+            //  return $absen;
             $data[] = [
                 'id' => $peg->id,
                 'nip' => $peg->nip,
@@ -70,7 +73,7 @@ class RincianAbsenController extends Controller
                 'data' => $data_absen
             ];
         }
-         $data=collect($data);
+          $data=collect($data);
         
         return view('pages.absensi.rincian_absen.index', compact('data', 'jenis_izin'))->with($this->data);
     }
@@ -102,32 +105,36 @@ class RincianAbsenController extends Controller
             $data_absen = [];
             $absen = Absensi::with('jenis_izin')->where('pegawai_id', $peg->id)->whereBetween('tanggal', [$from, $to])->orderBy('tanggal')->get();
             foreach ($absen as $r) {
-                $jam_kerja = '-';
+                $jam_kerja = '0 Jam 0 Menit';
                 $diff_mins = 0;
                
-                $assigned_time = ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
-                $d1 = new DateTime($assigned_time);
-                $d2 = new DateTime($completed_time);
-                $interval = $d2->diff($d1);
-                $jam_kerja = $interval->format('%H Jam %i Menit');
-                $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
+                if($r->keterangan != 'Tidak Absen'){
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? '00:00:00';
+
+                    $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                    $d1 = new DateTime($assigned_time);
+                    $d2 = new DateTime($completed_time);
+                    $interval = $d2->diff($d1);
+                    $jam_kerja = $interval->format('%H Jam %i Menit');
+                    $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
+                }
                 
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    'masuk' => ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat,
+                    // 'masuk' => ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat,
+                    'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
                     'kembali' => $r->jam_kembali_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
-                    'keterangan' => ($r->is_telat == 1) ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : 'Tepat Waktu')),
+                    'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
                     'd1'=> $assigned_time,
                     'd2'=> $completed_time,
                     'jam_kerja' => $jam_kerja,
                     'menit' => $diff_mins
                 ];
             }
-             
+            
             $data[] = [
                 'id' => $peg->id,
                 'nip' => $peg->nip,

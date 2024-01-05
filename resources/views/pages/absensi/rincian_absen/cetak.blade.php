@@ -86,7 +86,11 @@
                     <td class="text-center ">{{ $d['tgl'] }}</td>
                     <td colspan="6" class="text-center">{{ $d['status'] }}- <b>{{ $d['keterangan'] }}</b></td>
                     </tr>
-                    
+                    @elseif($d['keterangan']=='Tidak Absen' )
+                    <tr style="background-color: rgb(239, 116, 82)">
+                    <td class="text-center ">{{ $d['tgl'] }}</td>
+                    <td colspan="6" class="text-center">{{ $d['status'] }}- <b>{{ $d['keterangan'] }}</b></td>
+                    </tr>
                     @else
                     <tr class="">
                         <td class="text-center">{{ $d['tgl'] }}</td>
