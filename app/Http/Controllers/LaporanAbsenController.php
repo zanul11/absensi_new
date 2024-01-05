@@ -54,8 +54,8 @@ class LaporanAbsenController extends Controller
             foreach ($absen as $r) {
                 if($r->keterangan != 'Tidak Absen'){
                     $jam_pulang = JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
 
-                    $assigned_time = ($r->keterangan!=null) ? (($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat):null;
                     $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
                    
                     $d1 = new DateTime($assigned_time);
@@ -120,8 +120,9 @@ class LaporanAbsenController extends Controller
                 $jam_pulang = JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
 
                 if($r->keterangan != 'Tidak Absen'){
-                $assigned_time = ($r->keterangan!=null) ? (($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat):null;
-                $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
+               
+                    $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
                
                 $d1 = new DateTime($assigned_time);
                 $d2 = new DateTime($completed_time);
