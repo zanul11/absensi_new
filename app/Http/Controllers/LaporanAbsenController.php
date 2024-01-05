@@ -117,9 +117,12 @@ class LaporanAbsenController extends Controller
             $absen = Absensi::with('jenis_izin')->where('hari', true)->whereNull('jenis_izin_id')->where('pegawai_id', $peg->id)->whereBetween('tanggal', [$from, $to])->orderBy('tanggal')->get();
             $diff_mins=0;
             foreach ($absen as $r) {
+                $jam_pulang = JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+
                 if($r->keterangan != 'Tidak Absen'){
                 $assigned_time = ($r->keterangan!=null) ? (($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat):null;
-                $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+                $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+               
                 $d1 = new DateTime($assigned_time);
                 $d2 = new DateTime($completed_time);
                 $interval = $d2->diff($d1);
