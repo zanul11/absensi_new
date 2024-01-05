@@ -28,7 +28,7 @@ class LaporanAbsenController extends Controller
         $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-01')));
         $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
         $pegawai = Pegawai::orderby('name')->get();
-        $jenis_izin = JenisIzin::all();
+        $jenis_izin = JenisIzin::orderBy('hak', 'asc')->get();
         $data_absen = [];
         foreach ($pegawai as $peg) {
             $data['nip'] = $peg->nip;
@@ -37,15 +37,20 @@ class LaporanAbsenController extends Controller
             $data['kehadiran'] = Absensi::where('pegawai_id', $peg->id)->where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
             $data['telat'] = Absensi::where('pegawai_id', $peg->id)->where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
             $data['tanpa_keterangan'] = Absensi::where('pegawai_id', $peg->id)->where('keterangan', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
-
+            $tidak_masuk = 0;
             foreach ($jenis_izin as $izin) {
                 $getDataIzin = Absensi::where('pegawai_id', $peg->id)->where('jenis_izin_id', $izin->id)->whereBetween('tanggal', [$from, $to])->count();
+                //hitung tidak masuk hak =0
+                if ($izin->hak == 0)
+                    $tidak_masuk += $getDataIzin;
                 $data[strtolower(str_replace(' ', '_', $izin->name))] = $getDataIzin;
             }
+            $data['tidak_masuk'] = $tidak_masuk + $data['tanpa_keterangan'];
+
             $data_absen[] = $data;
         }
-        // return $data_absen;
-        return view('pages.absensi.laporan_absen.index', compact('data_absen'))->with($this->data);
+
+        return view('pages.absensi.laporan_absen.index', compact('data_absen', 'jenis_izin'))->with($this->data);
     }
 
     /**
@@ -56,9 +61,7 @@ class LaporanAbsenController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         //
@@ -69,7 +72,32 @@ class LaporanAbsenController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-01')));
+        $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
+        $pegawai = Pegawai::orderby('name')->get();
+        $jenis_izin = JenisIzin::orderBy('hak', 'asc')->get();
+        $data_absen = [];
+        foreach ($pegawai as $peg) {
+            $data['nip'] = $peg->nip;
+            $data['nama'] = $peg->name;
+            $data['jam_kerja'] = Absensi::where('pegawai_id', $peg->id)->where('hari', true)->whereBetween('tanggal', [$from, $to])->count();
+            $data['kehadiran'] = Absensi::where('pegawai_id', $peg->id)->where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
+            $data['telat'] = Absensi::where('pegawai_id', $peg->id)->where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
+            $data['tanpa_keterangan'] = Absensi::where('pegawai_id', $peg->id)->where('keterangan', 'Tidak Absen')->whereBetween('tanggal', [$from, $to])->count();
+            $tidak_masuk = 0;
+            foreach ($jenis_izin as $izin) {
+                $getDataIzin = Absensi::where('pegawai_id', $peg->id)->where('jenis_izin_id', $izin->id)->whereBetween('tanggal', [$from, $to])->count();
+                //hitung tidak masuk hak =0
+                if ($izin->hak == 0)
+                    $tidak_masuk += $getDataIzin;
+                $data[strtolower(str_replace(' ', '_', $izin->name))] = $getDataIzin;
+            }
+            $data['tidak_masuk'] = $tidak_masuk + $data['tanpa_keterangan'];
+
+            $data_absen[] = $data;
+        }
+
+        return view('pages.absensi.laporan_absen.cetak', compact('data_absen', 'jenis_izin'))->with($this->data);
     }
 
     /**

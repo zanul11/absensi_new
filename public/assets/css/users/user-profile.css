@@ -36,7 +36,27 @@
   box-shadow: 0 10px 15px rgba(0, 69, 255, 0.2);
 }
 
+.user-profile .widget-content-area .edit-profile2 {
+  height: 35px;
+  width: 35px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  background-color: green;
+  background: linear-gradient(to right, #5cc547 0%, #439117 100%);
+  border-radius: 50%;
+  box-shadow: 0 10px 15px rgba(0, 69, 255, 0.2);
+}
+
 .user-profile .widget-content-area .edit-profile svg {
+  font-size: 17px;
+  vertical-align: middle;
+  margin-right: 0;
+  color: #fff;
+  width: 19px;
+  align-self: center;
+}
+.user-profile .widget-content-area .edit-profile2 svg {
   font-size: 17px;
   vertical-align: middle;
   margin-right: 0;

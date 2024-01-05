@@ -1,0 +1,392 @@
+body.publik {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+.publik .unram-splash {
+    background: #eee url(../images/splash.jpg) no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    text-shadow: 0 0 10px #7e7e7e;
+}
+.publik .form-masuk {
+    width: 230px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.publik footer {
+    text-align: center;
+    font-size: 10px;
+    color: #555;
+}
+
+.publik .autentikasi {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.publik .info {
+    padding-top: 20px;
+}
+
+.publik .info .main {
+}
+
+.publik .info .sidebar {
+}
+
+/* ======= VIEW ======== */
+
+body.view {
+    padding-top: 50px;
+}
+.view .sidebar {
+    padding: 20px 0;
+    background: #eee;
+}
+.view .main {
+}
+.view .main .page-header {
+    margin-top: 20px;
+}
+.view footer {
+    text-align: center;
+    font-size: 10px;
+    color: #555;
+}
+.nav-sidebar {
+}
+.nav-sidebar > li.active > a,
+.nav-sidebar > li > a:hover {
+    color: #fff;
+    background-color: #428bca;
+}
+.nav-sidebar > li > a {
+    padding: 8px 15px;
+}
+.nav-sidebar > li > .nav-sidebar {
+    background-color: #f5f5f5;
+    border-top: thin solid #d8d8d8;
+}
+.nav-sidebar > li > .nav-sidebar li a {
+    padding-left: 25px;
+}
+.nav-sidebar > li > .nav-sidebar li.active a,
+.nav-sidebar > li > .nav-sidebar li a:hover {
+    background-color: #a8c9e5;
+}
+
+/** Misc **/
+.pagination {
+    margin: 0 0 10px 0;
+}
+.ui-datepicker-month,
+.ui-datepicker-year {
+    color: #555;
+}
+
+.pengumuman {
+}
+.pengumuman .tanggal {
+    background-color: #6bf5a2;
+    padding: 5px;
+    color: #ffffff;
+    border-radius: 5px;
+}
+.pengumuman .tanggal .hari {
+    font-size: 12px;
+}
+.pengumuman .tanggal .bulan {
+    font-weight: bold;
+    font-style: italic;
+}
+.pengumuman .tanggal .tahun {
+    font-size: 18px;
+}
+.pengumuman .meta {
+    font-size: 12px;
+}
+
+.krs .table-krs-head th {
+    max-width: 60px;
+}
+.krs .table-krs-head td {
+    max-width: 30px;
+}
+
+.pesan .pesan-meta {
+    font-size: 10px;
+    font-style: italic;
+    color: #999;
+}
+.pesan .media-body p {
+    margin-bottom: 0;
+}
+.pesan .media.mahasiswa {
+    text-align: right;
+}
+
+.krs .krs-status-meta {
+    font-size: 10px;
+    font-style: italic;
+    color: #999;
+}
+
+/* krs */
+.cetak.krs {
+    font-family: monospace;
+    font-size: 12px;
+    color: #000;
+}
+.cetak.krs #isi {
+    font-size: 14px;
+}
+.cetak.krs .clear {
+    clear: both;
+}
+.cetak.krs #logofakultas img {
+    height: 130px;
+}
+.cetak.krs table.table-krs-head tr th {
+    text-align: left;
+    width: 40%;
+}
+.cetak.krs table tr th,
+.cetak.krs table tr td {
+    padding: 3px 10px;
+    border-top: 1px solid #000;
+}
+.cetak.krs .table-bordered {
+    border: 1px solid #000;
+}
+.cetak.krs table.table-bordered tr th,
+.cetak.krs table.table-bordered tr td {
+    border: 1px solid #000;
+}
+.cetak.krs .ttd .nama {
+    display: block;
+    text-decoration: underline;
+}
+
+/* khs */
+.cetak.khs {
+    font-family: monospace;
+    font-size: 12px;
+    color: #000;
+}
+
+.cetak.khs #isi {
+    font-size: 14px;
+}
+
+.cetak.khs .clear {
+    clear: both;
+}
+
+.cetak.khs #logofakultas img {
+    height: 100px;
+}
+
+.cetak.khs span.header_univ {
+    font-size: 16px;
+}
+
+.cetak.khs table.table-krs-head tr th {
+    text-align: left;
+    width: 40%;
+}
+
+.cetak.khs table tr th,
+.cetak.khs table tr td {
+    padding: 3px 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.cetak.khs .table-bordered {
+    border: 1px solid #000;
+}
+
+.cetak.khs table.table-bordered tr th,
+.cetak.khs table.table-bordered tr td {
+    border: 1px solid #000 !important;
+}
+
+.cetak.khs #ttd .nama {
+    text-decoration: underline;
+}
+
+@media print {
+    /* orientasi kertas */
+    html.landscape,
+    body.landscape {
+        width: 15in;
+        height: 8.5in;
+    }
+    html.portrait,
+    body.portrait {
+        width: 8.5in;
+        height: 15in;
+    }
+
+    /* krs */
+    .cetak.krs {
+        font-family: monospace;
+        font-size: 12px;
+        color: #000;
+    }
+    .cetak.krs #isi {
+        font-size: 14px;
+    }
+    .cetak.krs .clear {
+        clear: both;
+    }
+    .cetak.krs #logofakultas img {
+        height: 130px;
+    }
+    .cetak.krs table.table-krs-head tr th {
+        text-align: left;
+        width: 40%;
+    }
+    .cetak.krs table tr th,
+    .cetak.krs table tr td {
+        padding: 3px 10px;
+        border-top: 1px solid #000;
+    }
+    .cetak.krs .table-bordered {
+        border: 1px solid #000;
+    }
+    .cetak.krs table.table-bordered tr th,
+    .cetak.krs table.table-bordered tr td {
+        border: 1px solid #000;
+    }
+    .cetak.krs .ttd .nama {
+        display: block;
+        text-decoration: underline;
+    }
+
+    /* khs */
+    .cetak.khs {
+        font-family: monospace;
+        font-size: 12px;
+        color: #000;
+    }
+
+    .cetak.khs #isi {
+        font-size: 14px;
+    }
+
+    .cetak.khs .clear {
+        clear: both;
+    }
+
+    .cetak.khs #logofakultas img {
+        height: 100px;
+    }
+
+    .cetak.khs span.header_univ {
+        font-size: 16px;
+    }
+
+    .cetak.khs table.table-krs-head tr th {
+        text-align: left;
+        width: 40%;
+    }
+
+    .cetak.khs table tr th,
+    .cetak.khs table tr td {
+        padding: 3px 10px;
+        border: none;
+        font-weight: bold;
+    }
+
+    .cetak.khs .table-bordered {
+        border: 1px solid #000;
+    }
+
+    .cetak.khs table.table-bordered tr th,
+    .cetak.khs table.table-bordered tr td {
+        border: 1px solid #000 !important;
+    }
+
+    .cetak.khs #ttd .nama {
+        text-decoration: underline;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #fafafa;
+    font: 11pt "Tahoma";
+}
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+#logofakultas {
+    margin-top: -20px;
+    float: left;
+}
+#logofakultas img {
+    height: 130px;
+}
+#isi {
+    margin-left: 5%;
+    float: left;
+}
+#info {
+    padding-top: 100px;
+}
+.table-krs {
+    width: 100%;
+}
+.table-krs th,
+.table-krs tr,
+.table-krs td {
+    text-align: center;
+    border: 1px;
+    border-style: solid;
+}
+.table-krs th {
+    height: 25px;
+}
+.table-krs td {
+    height: 22px;
+}
+.table-krs td.name {
+    text-align: left;
+    padding-left: 20px;
+}
+.halaman {
+    width: 21cm;
+    padding: 1cm;
+    margin: 1cm auto;
+    border: 1px #d3d3d3 solid;
+    border-radius: 5px;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.subhalaman {
+    padding: 1cm;
+    border: 5px red solid;
+    height: 200mm;
+    outline: 2cm #ffeaea solid;
+}
+
+@halaman {
+    size: A4;
+    margin: 0;
+}
+@media print {
+    .halaman {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+    }
+}

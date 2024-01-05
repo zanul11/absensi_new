@@ -13,8 +13,11 @@
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
                     <h3 class="">Data {{ucwords(str_replace('_',' ',$page_name))}}</h3>
-                    <a href="{{route('home')}}" class="mt-2 edit-profile">
-                        <i data-feather="home"></i></a>
+                    <div>
+                        <a href="{{route('laporan_absen.show',1)}}" class="mt-2 edit-profile">
+                            <i data-feather="file"></i></a>
+                    </div>
+                   
                 </div>
                 <form action="" method="get" data-parsley-validate="true">
                     <div class="row">
@@ -22,13 +25,12 @@
                             <input name="tanggal" value="{{(Cache::has('dTgl'))?Cache::get('dTgl').' to '.Cache::get('sTgl'):date('d-m-Y')}}" class="form-control flatpickr-input active basicFlatpickr" type="text" placeholder="Pilih Tanggal.." required>
                         </div>
                         <div class="form-group col-lg-4 col-md-12 col-xs-12">
-                            <p></p>
                             <button type="submit" class="form-control btn-success">Filter Tanggal</button>
                         </div>
-
+                      
                     </div>
                 </form>
-
+               
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
                         <thead>
@@ -39,11 +41,11 @@
                                 <th>Hari Kerja</th>
                                 <th>Kehadiran</th>
                                 <th>Telat</th>
-                                <th>Alpa</th>
-                                <th>Sakit</th>
-                                <th>Izin</th>
-                                <th>Cuti</th>
-                                <th>Tugas Dinas</th>
+                                <th>TK</th>
+                                @foreach ($jenis_izin as $izin)
+                                <th>{{ $izin->name }}</th>
+                                @endforeach
+                                <th>Persentase</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,6 +62,7 @@
                                 <td>{{$data['izin']}}</td>
                                 <td>{{$data['cuti']}}</td>
                                 <td>{{$data['tugas_dinas']}}</td>
+                                <td>{{($data['tidak_masuk']/$data['jam_kerja'])*100}}%</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -101,6 +104,11 @@
         serverSide: false,
         responsive: true,
         lengthChange: true,
+        pageLength: 100,
+        lengthMenu: [
+       
+        100, 250, 500, 'All'
+    ],
         render: function(data, type, row, meta) {
             return meta.row + meta.settings._iDisplayStart + 1;
         }
