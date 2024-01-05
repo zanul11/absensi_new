@@ -76,7 +76,7 @@
                         @foreach ($jenis_izin as $izin) 
                             <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
                         @endforeach
-                        <td>{{($data['tidak_masuk']/$data['jam_kerja'])*100}}%</td>
+                        <td>{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
                     </tr>
                     @endforeach
                 </tbody>
