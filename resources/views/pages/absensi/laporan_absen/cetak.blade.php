@@ -21,8 +21,12 @@
                 background-color: black !important;
                 height: 3px;
             }
+            table th, table td {
+                border:1px solid #fe1616;
+                padding:0.5em;
+            }
         }
-
+        
         @media screen {
             .garis {
                 background-color: black !important;
@@ -69,10 +73,9 @@
                         <td>{{$data['kehadiran']}}</td>
                         <td>{{$data['telat']}}</td>
                         <td>{{$data['tanpa_keterangan']}}</td>
-                        <td>{{$data['sakit']}}</td>
-                        <td>{{$data['izin']}}</td>
-                        <td>{{$data['cuti']}}</td>
-                        <td>{{$data['tugas_dinas']}}</td>
+                        @foreach ($jenis_izin as $izin) 
+                            <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
+                        @endforeach
                         <td>{{($data['tidak_masuk']/$data['jam_kerja'])*100}}%</td>
                     </tr>
                     @endforeach
@@ -102,7 +105,7 @@
 
     <script type="text/javascript">
         function cetak() {
-            // window.print();
+            window.print();
         };
     </script>
 

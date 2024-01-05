@@ -14,7 +14,7 @@
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
                     <h3 class="">Data {{ucwords(str_replace('_',' ',$page_name))}}</h3>
                     <div>
-                        <a href="{{route('laporan_absen.show',1)}}" class="mt-2 edit-profile">
+                        <a target="_blank" href="{{route('laporan_absen.show',1)}}" class="mt-2 edit-profile">
                             <i data-feather="file"></i></a>
                     </div>
                    
@@ -58,11 +58,10 @@
                                 <td>{{$data['kehadiran']}}</td>
                                 <td>{{$data['telat']}}</td>
                                 <td>{{$data['tanpa_keterangan']}}</td>
-                                <td>{{$data['sakit']}}</td>
-                                <td>{{$data['izin']}}</td>
-                                <td>{{$data['cuti']}}</td>
-                                <td>{{$data['tugas_dinas']}}</td>
-                                <td>{{($data['tidak_masuk']/$data['jam_kerja'])*100}}%</td>
+                                @foreach ($jenis_izin as $izin) 
+                                    <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
+                                @endforeach
+                                <td>{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
                             </tr>
                             @endforeach
                         </tbody>
