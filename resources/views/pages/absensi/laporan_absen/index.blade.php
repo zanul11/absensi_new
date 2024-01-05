@@ -36,7 +36,7 @@
                                 <th style="width: 5%">#</th>
                                 <th>Nip</th>
                                 <th>Pegawai </th>
-                                <th>Jam Kerja</th>
+                                <th>Hari Kerja</th>
                                 <th>Kehadiran</th>
                                 <th>Telat</th>
                                 <th>Alpa</th>
