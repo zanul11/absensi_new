@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\JadwalAbsen;
+use App\Models\JenisIzin;
 use App\Models\Kehadiran;
 use App\Models\Location;
 use App\Models\Pegawai;
 use App\Models\RequestAbsenPulang;
+use App\Models\TidakMasuk;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,11 +40,20 @@ class ApiController extends Controller
         $user = Pegawai::where('id', $id)->with('lokasi')->first();
         return response()->json([
             'response_code' => 200,
-            'message' => 'Login Berhasil',
+            'message' => 'success',
             'data' => $user
         ]);
     }
 
+    public function getJenisIzin()
+    {
+        return response()->json([
+            'response_code' => 200,
+            'message' => 'success',
+            'data' => JenisIzin::all()
+        ]);
+    }
+    
     public function getRincianAbsen($id)
     {
         $jadwal = JadwalAbsen::where('hari', date('N'))->first();
@@ -325,6 +336,49 @@ class ApiController extends Controller
                 'status' => 200,
                 'error' => true,
                 'data' => 'Sudah Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali'),
+            ]);
+        }
+    }
+
+
+    public function getTidakMasuk($id)
+    {
+        return response()->json([
+            'response_code' => 200,
+            'message' => 'Success',
+            'data' => TidakMasuk::with(['media','jenis_izin'])->where('pegawai_id', $id)->orderBy('created_at', 'desc')->get()
+        ]);
+    }
+
+    public function insertTidakMasuk(Request $request, $id)
+    {
+        $cek_sudah_absen = TidakMasuk::whereDate('tanggal_mulai','>=', $request->tanggal_mulai)->whereDate('tanggal_selesai','<=', $request->tanggal_selesai)->where('pegawai_id', $id)->where('jenis_izin_id', $request->jenis_izin_id)->first();
+        if (!$cek_sudah_absen) {
+            $hadir =  TidakMasuk::create([
+                'pegawai_id' => $id,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'jenis_izin_id' => $request->jenis_izin_id,
+                'keterangan' => $request->keterangan,
+                'user' => $id
+            ]);
+            if ($request->hasFile('file')) {
+                $hadir->getFirstMedia('tidak_masuk')?->delete();
+                $hadir
+                    ->addMediaFromRequest('file')
+                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                    ->toMediaCollection('tidak_masuk');
+            }
+            return response()->json([
+                'status' => 200,
+                'error' => false,
+                'data' => 'Request Absen Tidak Masuk Berhasil!',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'error' => true,
+                'data' => 'Sudah Request Tidak Masuk',
             ]);
         }
     }

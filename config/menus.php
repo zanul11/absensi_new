@@ -96,6 +96,11 @@ return [
                     'id' => 'absen',
                     'url' => 'request_absen_pulang',
                     'title' => 'absen'
+                ],
+                [
+                    'id' => 'tidak masuk',
+                    'url' => 'tidak_masuk',
+                    'title' => 'tidak masuk'
                 ]
             ]
         ],
@@ -191,6 +196,11 @@ return [
                     'id' => 'absen',
                     'url' => 'request_absen_pulang',
                     'title' => 'absen'
+                ],
+                [
+                    'id' => 'tidak masuk',
+                    'url' => 'tidak_masuk',
+                    'title' => 'tidak masuk'
                 ]
             ]
         ],

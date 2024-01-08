@@ -22,11 +22,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // new route
 Route::post('login', [ApiController::class, 'login']);
 Route::get('getLokasiUser/{id}', [ApiController::class, 'getLokasiUser']);
+Route::get('getJenisIzin', [ApiController::class, 'getJenisIzin']);
 Route::post('insertAbsen/{id}/{location}', [ApiController::class, 'insertAbsen']);
 Route::get('getAbsenPegawai/{id}', [ApiController::class, 'getAbsenPegawai']);
 Route::get('getLokasi', [ApiController::class, 'getLokasi']);
 Route::get('getRincianAbsen/{id}', [ApiController::class, 'getRincianAbsen']);
 Route::get('getHistoriAbsen/{id}/{tgl1}/{tgl2}', [ApiController::class, 'getHistoriAbsen']);
-Route::post('insertAbsenPulang/{id}', [ApiController::class, 'insertAbsenPulang']);
 
+Route::post('insertAbsenPulang/{id}', [ApiController::class, 'insertAbsenPulang']);
 Route::get('getRequestAbsenPulang/{id}', [ApiController::class, 'getRequestAbsenPulang']);
+
+Route::post('insertTidakMasuk/{id}', [ApiController::class, 'insertTidakMasuk']);
+Route::get('getTidakMasuk/{id}', [ApiController::class, 'getTidakMasuk']);

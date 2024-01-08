@@ -15,6 +15,7 @@ use App\Http\Controllers\PostingAbsenController;
 use App\Http\Controllers\RequestAbsenPulangController;
 use App\Http\Controllers\RincianAbsenController;
 use App\Http\Controllers\TglLiburController;
+use App\Http\Controllers\TidakMasukController;
 use App\Models\AbsenPulang;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -67,6 +68,12 @@ Route::middleware('auth:web')->group(function () {
     Route::post('request_absen_pulang/verifikasi', [RequestAbsenPulangController::class, 'verifikasi'])
         ->name('request_absen_pulang.verifikasi');
     Route::resource('request_absen_pulang', RequestAbsenPulangController::class);
+
+    Route::get('tidak_masuk/data', [TidakMasukController::class, 'data'])
+    ->name('tidak_masuk.data');
+    Route::post('tidak_masuk/verifikasi', [TidakMasukController::class, 'verifikasi'])
+        ->name('tidak_masuk.verifikasi');
+    Route::resource('tidak_masuk', TidakMasukController::class);   
 
     Route::resource('posting_absen', PostingAbsenController::class);
     Route::resource('laporan_absen', LaporanAbsenController::class);
