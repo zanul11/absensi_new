@@ -53,7 +53,7 @@ class KehadiranController extends Controller
                 if (Auth::user()->role == 'super')
                     return $edit . '  ' . $delete;
                 else
-                    return $edit;
+                    return $delete;
             })
             ->rawColumns(['action',  'absen', 'link'])
             ->make(true);
