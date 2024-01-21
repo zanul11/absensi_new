@@ -56,7 +56,9 @@ class ApiController extends Controller
     
     public function getRincianAbsen($id)
     {
-        $jadwal = JadwalAbsen::where('hari', date('N'))->first();
+        // return date('N');
+        $hari = date('N')==7?0:date('N');
+        $jadwal = JadwalAbsen::where('hari', $hari)->first();
         $pegawai = Pegawai::where('id', $id)->with('lokasi')->first();
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
         $data = [];
@@ -310,7 +312,8 @@ class ApiController extends Controller
 
     public function insertAbsenPulang(Request $request, $id)
     {
-        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
+        // return $request;
+         $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
         if (!$cek_sudah_absen) {
             $hadir =  RequestAbsenPulang::create([
                 'pegawai_id' => $id,
@@ -332,10 +335,11 @@ class ApiController extends Controller
                 'data' => 'Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali') . ' Berhasil!',
             ]);
         } else {
+            // return 'a';
             return response()->json([
                 'status' => 200,
                 'error' => true,
-                'data' => 'Sudah Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali'),
+                'data' => 'Sudah Request Absen '.  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali')) ,
             ]);
         }
     }
