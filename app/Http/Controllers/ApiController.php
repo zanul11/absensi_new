@@ -53,11 +53,11 @@ class ApiController extends Controller
             'data' => JenisIzin::all()
         ]);
     }
-    
+
     public function getRincianAbsen($id)
     {
         // return date('N');
-        $hari = date('N')==7?0:date('N');
+        $hari = date('N') == 7 ? 0 : date('N');
         $jadwal = JadwalAbsen::where('hari', $hari)->first();
         $pegawai = Pegawai::where('id', $id)->with('lokasi')->first();
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
@@ -275,9 +275,9 @@ class ApiController extends Controller
         foreach ($absen as $r) {
             $jam_kerja = '-';
             $diff_mins = 0;
-            
-            $assigned_time = ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-            $completed_time = ($r->jam_pulang!=null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
+
+            $assigned_time = ($r->jam_masuk != null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
+            $completed_time = ($r->jam_pulang != null) ? $r->jam_pulang : JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
             $d1 = new DateTime($assigned_time);
             $d2 = new DateTime($completed_time);
             $interval = $d2->diff($d1);
@@ -313,7 +313,7 @@ class ApiController extends Controller
     public function insertAbsenPulang(Request $request, $id)
     {
         // return $request;
-         $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
+        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
         if (!$cek_sudah_absen) {
             $hadir =  RequestAbsenPulang::create([
                 'pegawai_id' => $id,
@@ -339,7 +339,7 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 200,
                 'error' => true,
-                'data' => 'Sudah Request Absen '.  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali')) ,
+                'data' => 'Sudah Request Absen ' .  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : (($request->jenis == 0 ? 'Masuk' : 'Kembali')))),
             ]);
         }
     }
@@ -350,13 +350,26 @@ class ApiController extends Controller
         return response()->json([
             'response_code' => 200,
             'message' => 'Success',
-            'data' => TidakMasuk::with(['media','jenis_izin'])->where('pegawai_id', $id)->orderBy('created_at', 'desc')->get()
+            'data' => TidakMasuk::with('media')->withWhereHas('jenis_izin', function ($q) {
+                return $q->where('name', "!=", 'Cuti');
+            })->where('pegawai_id', $id)->orderBy('created_at', 'desc')->get()
+        ]);
+    }
+
+    public function getCuti($id)
+    {
+        return response()->json([
+            'response_code' => 200,
+            'message' => 'Success',
+            'data' => TidakMasuk::with('media')->withWhereHas('jenis_izin', function ($q) {
+                return $q->where('name', 'Cuti');
+            })->where('pegawai_id', $id)->orderBy('created_at', 'desc')->get()
         ]);
     }
 
     public function insertTidakMasuk(Request $request, $id)
     {
-        $cek_sudah_absen = TidakMasuk::whereDate('tanggal_mulai','>=', $request->tanggal_mulai)->whereDate('tanggal_selesai','<=', $request->tanggal_selesai)->where('pegawai_id', $id)->where('jenis_izin_id', $request->jenis_izin_id)->first();
+        $cek_sudah_absen = TidakMasuk::whereDate('tanggal_mulai', '>=', $request->tanggal_mulai)->whereDate('tanggal_selesai', '<=', $request->tanggal_selesai)->where('pegawai_id', $id)->where('jenis_izin_id', $request->jenis_izin_id)->first();
         if (!$cek_sudah_absen) {
             $hadir =  TidakMasuk::create([
                 'pegawai_id' => $id,

@@ -55,6 +55,9 @@
                                 <div class="form-group col-lg-3 col-md-12 col-xs-12">
                                     <p>Jenis Request</p>
                                     <select class="form-control " data-live-search="false" name="jenis">
+                                        <option value="0" {{ old('jenis',$requestAbsenPulang->jenis??'')==0 ? 'selected' : '' }}>
+                                            Absen Masuk
+                                        </option>
                                         <option value="1" {{ old('jenis',$requestAbsenPulang->jenis??'')==1 ? 'selected' : '' }}>
                                             Absen Pulang
                                         </option>
@@ -84,7 +87,7 @@
                                 </div>
                                 <div class="form-group col-lg-12 col-md-12 col-xs-12">
                                     <p>Foto</p>
-                                    <input class="form-control"  type="file" name="file">
+                                    <input class="form-control" type="file" name="file">
                                 </div>
                             </div>
 

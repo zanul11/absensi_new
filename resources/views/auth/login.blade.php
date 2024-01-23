@@ -87,11 +87,11 @@
                                 <div class="division">
                                     <span> &#169; {{date('Y')}} {{env('APP_NAME')}} </span>
                                 </div>
-                              
-                                    <div class="text-center">
-                                        <a href="{{ asset('apk7.apk') }}" class="btn btn-success" value="">Download APK</a>
-                                    </div>
-                             
+
+                                <div class="text-center">
+                                    <a href="{{ asset('absensi.apk') }}" class="btn btn-success" value="">Download APK</a>
+                                </div>
+
                             </div>
                         </form>
 
