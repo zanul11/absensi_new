@@ -332,7 +332,7 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 200,
                 'error' => false,
-                'data' => 'Request Absen ' . ($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : 'Kembali') . ' Berhasil!',
+                'data' => 'Berhasil Request Absen ' .  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : (($request->jenis == 0 ? 'Masuk' : 'Kembali')))),
             ]);
         } else {
             // return 'a';
