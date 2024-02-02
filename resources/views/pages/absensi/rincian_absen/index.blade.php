@@ -94,8 +94,12 @@ table.table-bordered > tbody > tr > td {
                                 @else
                                 <tr class="">
                                     <td class="text-center">{{ $d['tgl'] }}</td>
-                                    <td class="text-center">
-                                        {{ $d['status']=='Terlambat' ? 'Ya' : '-' }}
+                                    <td class="text-center" style="background-color: {{ ($d['status']=='Terlambat')?'yellow':'' }};">
+                                        <!-- {{ $d['status']=='Terlambat' ? 'Ya' : '-' }} -->
+                                        @if($d['status']=='Terlambat')
+                                        {{ $d['telat'] }}
+                                        
+                                        @else - @endif
                                         </td>
                                         
                                         <td class="text-center ">
