@@ -7,10 +7,12 @@ use App\Models\JadwalAbsen;
 use App\Models\JenisIzin;
 use App\Models\Kehadiran;
 use App\Models\Location;
+use App\Models\Log;
 use App\Models\Pegawai;
 use App\Models\RequestAbsenPulang;
 use App\Models\TidakMasuk;
 use DateTime;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -117,7 +119,9 @@ class ApiController extends Controller
     public function insertAbsen(Request $request, $id, $location)
     {
         // return $location;
-        $jadwal = JadwalAbsen::where('hari', date('N'))->first();
+        
+        try {
+            $jadwal = JadwalAbsen::where('hari', date('N'))->first();
         if ($jadwal->status == 0) {
             return response()->json([
                 'status' => 200,
@@ -267,6 +271,14 @@ class ApiController extends Controller
             ]);
         }
     }
+        catch(Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => true,
+                'data' => $e->getMessage(),
+            ]);
+          }
+    }
 
     public function getHistoriAbsen($id, $tgl1, $tgl2)
     {
@@ -398,5 +410,22 @@ class ApiController extends Controller
                 'data' => 'Sudah Request Tidak Masuk',
             ]);
         }
+    }
+
+
+    public function insertLog(Request $request)
+    {
+            Log::create([
+                'user' => $request->user,
+                'action' => $request->action,
+                'log' => $request->log,
+            ]);
+           
+            return response()->json([
+                'status' => 200,
+                'error' => false,
+                'data' => 'Berhasil',
+            ]);
+        
     }
 }

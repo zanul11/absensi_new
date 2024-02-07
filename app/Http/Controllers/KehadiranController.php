@@ -66,7 +66,7 @@ class KehadiranController extends Controller
             Cache::put('dTgl', $tanggal[0]);
             Cache::put('sTgl', $tanggal[1] ?? $tanggal[0]);
         } else {
-            Cache::put('dTgl', date('01-m-Y'));
+            Cache::put('dTgl', date('d-m-Y'));
             Cache::put('sTgl', date('d-m-Y'));
         }
         return view('pages.absensi.kehadiran.index')->with($this->data);

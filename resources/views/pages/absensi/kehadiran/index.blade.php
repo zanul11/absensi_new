@@ -31,8 +31,8 @@
                     </div>
                 </form>
 
-                <div class="table-responsive">
-                    <table id="datatable" class="table table-hover">
+                <div class="table-responsive" >
+                    <table id="datatable" class="table table-hover" >
                         <thead>
                             <tr>
                                 <th style="width: 5%">#</th>
