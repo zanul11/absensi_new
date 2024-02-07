@@ -8,6 +8,7 @@ use App\Models\Kehadiran;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use  Yajra\Datatables\DataTables;
 
 class KehadiranController extends Controller
@@ -121,6 +122,9 @@ class KehadiranController extends Controller
     public function destroy(Kehadiran $kehadiran)
     {
         $kehadiran->getFirstMedia('absen')?->delete();
-        $kehadiran->delete();
+        if($kehadiran->delete()) { // If softdeleted
+            DB::table('kehadirans')->where('id', $kehadiran->id)
+              ->update(array('user' => Auth::user()->name));
+        }
     }
 }
