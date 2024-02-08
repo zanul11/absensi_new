@@ -72,7 +72,7 @@ table.table-bordered > tbody > tr > td {
                                 @endphp
                                 @foreach ($dt['data'] as $d)
                                 @php
-                                    if( $d['status']!='Hari Libur' && $d['status']!='Izin')
+                                if( $d['status']!='Hari Libur' && $d['status']!='Izin' && $d['hari']!=0 )
                                         $menit+= $d['menit'];
                                     
                                 @endphp
@@ -89,7 +89,12 @@ table.table-bordered > tbody > tr > td {
                                 @elseif($d['keterangan']=='Tidak Absen' )
                                 <tr style="background-color: rgb(239, 116, 82)">
                                 <td class="text-center ">{{ $d['tgl'] }}</td>
-                                <td colspan="6" class="text-center">{{ $d['status'] }}- <b>{{ $d['keterangan'] }}</b></td>
+                                <td colspan="6" class="text-center"><b>{{ $d['keterangan'] }}</b></td>
+                                </tr>
+                                @elseif($d['hari']==0)
+                                <tr style="background-color: amber">
+                                <td class="text-center ">{{ $d['tgl'] }}</td>
+                                <td colspan="6" class="text-center"><b>Libur</b></td>
                                 </tr>
                                 @else
                                 <tr class="">

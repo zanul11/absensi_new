@@ -59,8 +59,8 @@ class RincianAbsenController extends Controller
                 // echo ($start_datetime->diff($end_datetime));
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    // 'masuk' =>($r->keterangan=='Tidak Absen')?null :(($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat),
                     'jam_masuk'=>$jadwal->jam_masuk_toleransi,
+                    'hari' => $r->hari,
                     'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
@@ -118,42 +118,50 @@ class RincianAbsenController extends Controller
             foreach ($absen as $r) {
                 $jam_kerja = '0 Jam 0 Menit';
                 $diff_mins = 0;
-               
+                $assigned_time =null;
+                $completed_time=null;
+                $jadwal = JadwalAbsen::where('hari', date('N'))->first();
                 if($r->keterangan != 'Tidak Absen'){
-                    $jam_pulang = JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
-                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                    $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): JadwalAbsen::where('hari', date('N'))->first()->jam_pulang;
-
+                    $jam_pulang = $jadwal->jam_pulang;
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jadwal->jam_masuk_istirahat;
+                    $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): $jadwal->jam_pulang;
                     $d1 = new DateTime($assigned_time);
                     $d2 = new DateTime($completed_time);
                     $interval = $d2->diff($d1);
                     $jam_kerja = $interval->format('%H Jam %i Menit');
                     $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
                 }
-                
+                // return JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
+                $start_datetime = new DateTime(date('Y-m-d').' '.$jadwal->jam_masuk_toleransi);
+                $end_datetime = new DateTime(date('Y-m-d').' '.$assigned_time);
+
+                // echo ($start_datetime->diff($end_datetime));
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    // 'masuk' => ($r->jam_masuk!=null) ? $r->jam_masuk : $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat,
+                    'jam_masuk'=>$jadwal->jam_masuk_toleransi,
+                    'hari' => $r->hari,
                     'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
-                    'kembali' => $r->jam_kembali_istirahat,
+                    'kembali' => $r->jam_masuk_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
                     'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
                     'd1'=> $assigned_time,
                     'd2'=> $completed_time,
+                    'telat'=>($start_datetime->diff($end_datetime))->format('%H:%i'),
                     'jam_kerja' => $jam_kerja,
                     'menit' => $diff_mins
                 ];
+
             }
             
-            $data[] = [
+             $data[] = [
                 'id' => $peg->id,
                 'nip' => $peg->nip,
                 'name' => $peg->name,
                 'data' => $data_absen
             ];
-            
+
         }
          
 
