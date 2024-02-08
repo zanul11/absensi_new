@@ -16,6 +16,7 @@
         </div>
 
     </div>
+    <a href="/home/posting">Posting Data Hilang</a>
 
 </div>
 

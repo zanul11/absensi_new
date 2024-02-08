@@ -64,7 +64,7 @@ class RincianAbsenController extends Controller
                     'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
-                    'kembali' => $r->jam_kembali_istirahat,
+                    'kembali' => $r->jam_masuk_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
                     'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
                     'd1'=> $assigned_time,
@@ -84,7 +84,7 @@ class RincianAbsenController extends Controller
             ];
 
         }
-            $data=collect($data);
+             $data=collect($data);
         
         return view('pages.absensi.rincian_absen.index', compact('data', 'jenis_izin'))->with($this->data);
     }

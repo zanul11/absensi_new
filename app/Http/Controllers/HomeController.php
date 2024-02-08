@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\JadwalAbsen;
 use App\Models\JenisIzin;
+use App\Models\Kehadiran;
 use App\Models\Pegawai;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -69,5 +71,114 @@ class HomeController extends Controller
 
         
         return view('dashboard', compact('chart_performance'))->with($data);
+    }
+
+
+
+    public function data()
+    {
+        $pegawai = Pegawai::all();
+       
+      
+            for ($i = 0; $i <= 5; $i++) {
+                $getHari = date('w', strtotime("+" . $i . " day", strtotime('2024-02-01')));
+                $getTgl = date('Y-m-d', strtotime("+" . $i . " day", strtotime('2024-02-01')));
+                 $cekHariKerja = JadwalAbsen::where('hari', $getHari)->first();
+            foreach ($pegawai as $key => $value) {
+        
+                if($cekHariKerja->status==1){
+                    if(Kehadiran::where('pegawai_id', $value->id)->first()){
+                        if(!Kehadiran::where('pegawai_id', $value->id)->whereNotNull('jenis_izin_id')->where('tanggal', $getTgl)->first()){
+                            $data[] = [
+                                "id" => Str::uuid(),
+                                "pegawai_id" => $value->id,
+                                'jenis' => 0,
+                                "tanggal" => $getTgl,
+                                'jenis_izin_id' => null,
+                                "keterangan" => 'Posting Ulang Karena Terhapus',
+                                "jam" => JadwalAbsen::where('hari', $getHari)->first()->jam_masuk,
+                                 "user" => Auth::user()->name,
+                                 "created_at" => date('Y-m-d H:i:s'),
+                                "updated_at" => date('Y-m-d H:i:s'),
+                                'location' => 'By Sistem',
+                                'deleted_at' => null
+                            ];
+                            $data[] = [
+                                "id" => Str::uuid(),
+                                "pegawai_id" => $value->id,
+                                'jenis' => 1,
+                                "tanggal" => $getTgl,
+                                'jenis_izin_id' => null,
+                                "keterangan" => 'Posting Ulang Karena Terhapus',
+                                "jam" => JadwalAbsen::where('hari', $getHari)->first()->jam_pulang,
+                                 "user" => Auth::user()->name,
+                                 "created_at" => date('Y-m-d H:i:s'),
+                                "updated_at" => date('Y-m-d H:i:s'),
+                                'location' => 'By Sistem',
+                                'deleted_at' => null
+                            ];
+                            $data[] = [
+                                "id" => Str::uuid(),
+                                "pegawai_id" => $value->id,
+                                'jenis' => 2,
+                                "tanggal" => $getTgl,
+                                'jenis_izin_id' => null,
+                                "keterangan" => 'Posting Ulang Karena Terhapus',
+                                "jam" => JadwalAbsen::where('hari', $getHari)->first()->jam_keluar_istirahat,
+                                 "user" => Auth::user()->name,
+                                 "created_at" => date('Y-m-d H:i:s'),
+                                "updated_at" => date('Y-m-d H:i:s'),
+                                'location' => 'By Sistem',
+                                'deleted_at' => null
+                            ];
+                            $data[] = [
+                                "id" => Str::uuid(),
+                                "pegawai_id" => $value->id,
+                                'jenis' => 3,
+                                "tanggal" => $getTgl,
+                                'jenis_izin_id' => null,
+                                "keterangan" => 'Posting Ulang Karena Terhapus',
+                                "jam" => JadwalAbsen::where('hari', $getHari)->first()->jam_masuk_istirahat,
+                                 "user" => Auth::user()->name,
+                                 "created_at" => date('Y-m-d H:i:s'),
+                                "updated_at" => date('Y-m-d H:i:s'),
+                                'location' => 'By Sistem',
+                                'deleted_at' => null
+                            ];
+                        }
+                    }
+                } 
+            }
+            
+        }
+        // return $data;
+        Kehadiran::insert($data);
+return redirect()->route('home');
+    }
+
+    public function getNamaHari($hari)
+    {
+        switch ($hari) {
+            case 1:
+                return "Senin";
+                break;
+            case 2:
+                return "Selasa";
+                break;
+            case 3:
+                return "Rabu";
+                break;
+            case 4:
+                return "Kamis";
+                break;
+            case 5:
+                return "Jumat";
+                break;
+            case 6:
+                return "Sabtu";
+                break;
+            default:
+                return "Minggu";
+        }
     }
 }

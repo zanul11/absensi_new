@@ -61,7 +61,7 @@ class PostingAbsenController extends Controller
             $pegawai = Pegawai::all();
             foreach ($pegawai as $peg) {
                 if ($cekHariKerja->status == 0) {
-                    //jika hari kerja libur
+                    //jika hari libur
                     $data[] = [
                         "id" => Str::uuid(),
                         "pegawai_id" => $peg->id,

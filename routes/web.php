@@ -80,5 +80,6 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('rincian_absen', RincianAbsenController::class);
 
     Route::resource('informasi', HomeController::class);
+    Route::get('/home/posting', [HomeController::class, 'data'])->name('home');
 });
 Route::get('/home', [HomeController::class, 'index'])->name('home');
