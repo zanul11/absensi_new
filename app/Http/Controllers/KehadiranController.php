@@ -125,7 +125,7 @@ class KehadiranController extends Controller
 
         if($kehadiran->delete()) { // If softdeleted
             DB::table('kehadirans')->where('id', $kehadiran->id)
-              ->update(array('user' => Auth::user()->name));
+              ->update(array('user' => Auth::user()->name, 'keterangan' => 'dihapus oleh ' . Auth::user()->name));
         }
     }
 }
