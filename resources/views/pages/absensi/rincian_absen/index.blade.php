@@ -72,7 +72,7 @@ table.table-bordered > tbody > tr > td {
                                 @endphp
                                 @foreach ($dt['data'] as $d)
                                 @php
-                                if( $d['status']!='Hari Libur' && $d['status']!='Izin' && $d['hari']!=0 )
+                                    if( $d['status']!='Hari Libur' && $d['status']!='Izin' && $d['hari']!=0 )
                                         $menit+= $d['menit'];
                                     
                                 @endphp
