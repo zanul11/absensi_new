@@ -86,7 +86,7 @@
                                     @endphp
                                 @endforeach
                                 <td>{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
-                                <td>{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
+                                <td>{{round(($data['kehadiran']/$data['jam_kerja'])*100,2)}}%</td>
                             </tr>
                             @endforeach
                         </tbody>

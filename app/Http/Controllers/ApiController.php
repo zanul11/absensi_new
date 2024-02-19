@@ -143,7 +143,7 @@ class ApiController extends Controller
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
                 if ($request->hasFile('file')) {
-                    $hadir->getFirstMedia('absen')?->delete();
+                    // $hadir->getFirstMedia('absen')?->delete();
                     $hadir
                         ->addMediaFromRequest('file')
                         ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
@@ -175,7 +175,7 @@ class ApiController extends Controller
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
                 if ($request->hasFile('file')) {
-                    $hadir->getFirstMedia('absen')?->delete();
+                    // $hadir->getFirstMedia('absen')?->delete();
                     $hadir
                         ->addMediaFromRequest('file')
                         ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
@@ -207,7 +207,7 @@ class ApiController extends Controller
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
                 if ($request->hasFile('file')) {
-                    $hadir->getFirstMedia('absen')?->delete();
+                    // $hadir->getFirstMedia('absen')?->delete();
                     $hadir
                         ->addMediaFromRequest('file')
                         ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
@@ -245,7 +245,7 @@ class ApiController extends Controller
                     'user' => Pegawai::where('id', $id)->first()->name
                 ]);
                 if ($request->hasFile('file')) {
-                    $hadir->getFirstMedia('absen')?->delete();
+                    // $hadir->getFirstMedia('absen')?->delete();
                     $hadir
                         ->addMediaFromRequest('file')
                         ->usingFileName($hadir->id  . "." . $request->file('file')->extension())

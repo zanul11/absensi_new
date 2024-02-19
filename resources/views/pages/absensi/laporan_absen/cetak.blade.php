@@ -65,7 +65,28 @@
 
                 </thead>
                 <tbody>
+                @php
+                            $hari_kerja = 0;
+                            $kehadiran = 0;
+                            $telat = 0;
+                            $tanpa_keterangan = 0;
+                            $total_persen = 0;
+                        @endphp
+
+                        @foreach ($jenis_izin as $izin) 
+                        @php
+                            ${$izin->name} = 0;
+                        @endphp
+                        @endforeach
                     @foreach($data_absen as $data)
+                 
+                            @php
+                            $hari_kerja += $data['jam_kerja'];
+                            $kehadiran += $data['kehadiran'];
+                            $telat += $data['telat'];
+                            $tanpa_keterangan += $data['tanpa_keterangan'];
+                            $total_persen += ((($data['kehadiran']/$data['jam_kerja'])*100));
+                            @endphp
                     <tr >
                         <td align="center">{{$loop->iteration}}</td>
                         <td align="center">{{$data['nip']}}</td>
@@ -78,10 +99,25 @@
                             <td align="center">{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
                         @endforeach
                         <td align="center">{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
-                        <td align="center">{{($data['kehadiran']/$data['jam_kerja'])*100}}%</td>
+                        <td align="center">{{round(($data['kehadiran']/$data['jam_kerja'])*100,2)}}%</td>
                     </tr>
                     @endforeach
+                    <tr style="font-weight: 700">
+                                <td colspan="3" style="text-align: center">Total</td>
+                                <td>{{$hari_kerja}}</td>
+                                <td>{{$kehadiran}}</td>
+                                <td>{{$telat}}</td>
+                                <td>{{$tanpa_keterangan}}</td>
+                                @foreach ($jenis_izin as $izin) 
+                                <td>{{ ${$izin->name} }}</td>
+                                @endforeach
+                                <td colspan="2" style="text-align: center">{{round($total_persen/count($data_absen),2)}}%</td>
+                                
+                            </tr>
                 </tbody>
+                <tfoot>
+                            
+                        </tfoot>
             </table>
             <hr style="height:3px;  background-color:black">
             <div class="pull-left ttd">

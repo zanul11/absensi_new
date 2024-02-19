@@ -122,7 +122,6 @@ class KehadiranController extends Controller
     public function destroy(Kehadiran $kehadiran)
     {
         // $kehadiran->getFirstMedia('absen')?->delete();
-
         if($kehadiran->delete()) { // If softdeleted
             DB::table('kehadirans')->where('id', $kehadiran->id)
               ->update(array('user' => Auth::user()->name, 'keterangan' => 'dihapus oleh ' . Auth::user()->name));
