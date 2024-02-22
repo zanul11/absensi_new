@@ -106,6 +106,10 @@ class PostingAbsenController extends Controller
                             "is_telat_kembali" => 0,
                         ];
                     } else {
+                         Kehadiran::whereNotNull('deleted_at')
+                         ->where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->withTrashed()->update([
+                            'deleted_at' => null
+                         ]);
                         //jika hari kerja normal
                         $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('jam', 'asc')->first();
                         //absen masuk jenis=0 atau masuk

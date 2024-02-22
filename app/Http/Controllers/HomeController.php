@@ -25,6 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // return Kehadiran::whereNotNull('deleted_at')->withTrashed()->get();
         $data = [
             'category_name' => 'home',
             'page_name' => 'home',
