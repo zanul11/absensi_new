@@ -356,6 +356,41 @@ class ApiController extends Controller
         }
     }
 
+    public function insertAbsenPulangWithLokasi(Request $request, $id)
+    {
+        // return $request;
+        $cek_sudah_absen = RequestAbsenPulang::whereDate('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', $request->jenis)->first();
+        if (!$cek_sudah_absen) {
+            $hadir =  RequestAbsenPulang::create([
+                'pegawai_id' => $id,
+                'tanggal' => date('Y-m-d H:i:s'),
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
+                'lokasi' => $request->lokasi,
+                'user' => $id
+            ]);
+            if ($request->hasFile('file')) {
+                $hadir->getFirstMedia('absen_pulang')?->delete();
+                $hadir
+                    ->addMediaFromRequest('file')
+                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                    ->toMediaCollection('absen_pulang');
+            }
+            return response()->json([
+                'status' => 200,
+                'error' => false,
+                'data' => 'Berhasil Request Absen ' .  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : (($request->jenis == 0 ? 'Masuk' : 'Kembali')))),
+            ]);
+        } else {
+            // return 'a';
+            return response()->json([
+                'status' => 200,
+                'error' => true,
+                'data' => 'Sudah Request Absen ' .  (($request->jenis == 1) ? 'Pulang' : ($request->jenis == 2 ? 'Keluar' : (($request->jenis == 0 ? 'Masuk' : 'Kembali')))),
+            ]);
+        }
+    }
+
 
     public function getTidakMasuk($id)
     {

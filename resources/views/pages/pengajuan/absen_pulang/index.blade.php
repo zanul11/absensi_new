@@ -59,6 +59,7 @@
                                 <th>Tanggal</th>
                                 <th>Jenis </th>
                                 <th>Pegawai </th>
+                                <th>Lokasi</th>
                                 <th>Keterangan</th>
                                 <th>Status</th>
                                 <th>Foto</th>
@@ -128,6 +129,10 @@
             {
                 data: 'pegawai.name',
                 name: 'pegawai.name'
+            },
+            {
+                data: 'lokasi',
+                name: 'lokasi'
             }, {
                 data: 'keterangan',
                 name: 'keterangan'

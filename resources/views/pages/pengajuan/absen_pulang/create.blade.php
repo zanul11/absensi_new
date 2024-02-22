@@ -82,6 +82,10 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                                    <p>Lokasi</p>
+                                    <textarea id="lokasi" name="lokasi" class="form-control" required>{{ old('lokasi',$requestAbsenPulang->lokasi??'') }}</textarea>
+                                </div>
+                                <div class="form-group col-lg-12 col-md-12 col-xs-12">
                                     <p>Keterangan</p>
                                     <textarea id="keterangan" name="keterangan" class="form-control" required>{{ old('keterangan',$requestAbsenPulang->keterangan??'') }}</textarea>
                                 </div>

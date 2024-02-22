@@ -37,3 +37,5 @@ Route::get('getTidakMasuk/{id}', [ApiController::class, 'getTidakMasuk']);
 Route::get('getCuti/{id}', [ApiController::class, 'getCuti']);
 Route::post('insertLog', [ApiController::class, 'insertLog']);
 
+Route::post('insertAbsenPulangWithLokasi/{id}', [ApiController::class, 'insertAbsenPulangWithLokasi']);
+
