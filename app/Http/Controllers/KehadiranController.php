@@ -31,6 +31,11 @@ class KehadiranController extends Controller
                 ->select(['*'])->orderBy('tanggal', 'desc');;
         }
 
+        Kehadiran::whereNotNull('deleted_at')
+        ->whereBetween('tanggal', [$from, $to])->withTrashed()->update([
+           'deleted_at' => null
+        ]);
+
 
         return DataTables::of($data)
             ->addColumn('absen', function ($data) {
