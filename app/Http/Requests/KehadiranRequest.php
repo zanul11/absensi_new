@@ -21,7 +21,7 @@ class KehadiranRequest extends FormRequest
             "pegawai_id" => ["required", "exists:pegawais,id"],
             "tanggal" => ["date_format:Y-m-d", "string"],
             "jenis_izin_id" => ["nullable", "exists:jenis_izin,id"],
-            "jenis" => ["required", "boolean"],
+            "jenis" => ["required", "numeric"],
             "jam" => ["date_format:H:i", "string"],
             "keterangan" => ["required", "string"],
             "user" => ["required", "string"],
