@@ -32,7 +32,7 @@ class HomeController extends Controller
 
         ];
          $data_absen = [];
-         $data['jam_kerja'] = Absensi::where('hari', true)->whereMonth('tanggal',2)->count();
+         $data['jam_kerja'] = Absensi::where('hari', true)->whereMonth('tanggal',date('m'))->count();
          $data['kehadiran'] = Absensi::where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
          $data['tepat_waktu'] = Absensi::where('hari', true)->where('is_telat', false)->whereNotNull('jam_masuk')->whereNull('jenis_izin_id')->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
          $data['telat'] = Absensi::where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
