@@ -33,16 +33,16 @@ class HomeController extends Controller
         ];
          $data_absen = [];
          $data['jam_kerja'] = Absensi::where('hari', true)->whereMonth('tanggal',date('m'))->count();
-         $data['kehadiran'] = Absensi::where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
-         $data['tepat_waktu'] = Absensi::where('hari', true)->where('is_telat', false)->whereNotNull('jam_masuk')->whereNull('jenis_izin_id')->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
-         $data['telat'] = Absensi::where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',2)->count();
-         $data['tanpa_keterangan'] = Absensi::where('keterangan', 'Tidak Absen')->whereMonth('tanggal',2)->count();
-         $data['izin']  = Absensi::whereNotNull('jenis_izin_id')->whereMonth('tanggal',2)->count();
+         $data['kehadiran'] = Absensi::where('hari', true)->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',date('m'))->count();
+         $data['tepat_waktu'] = Absensi::where('hari', true)->where('is_telat', false)->whereNotNull('jam_masuk')->whereNull('jenis_izin_id')->where('status', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',date('m'))->count();
+         $data['telat'] = Absensi::where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal',date('m'))->count();
+         $data['tanpa_keterangan'] = Absensi::where('keterangan', 'Tidak Absen')->whereMonth('tanggal',date('m'))->count();
+         $data['izin']  = Absensi::whereNotNull('jenis_izin_id')->whereMonth('tanggal',date('m'))->count();
          
          $jenis_izin_dinas = JenisIzin::where('hak', 1)->get();
-         $data['izin_dinas']  = Absensi::whereIn('jenis_izin_id', $jenis_izin_dinas->pluck('id'))->whereMonth('tanggal',2)->count();
+         $data['izin_dinas']  = Absensi::whereIn('jenis_izin_id', $jenis_izin_dinas->pluck('id'))->whereMonth('tanggal',date('m'))->count();
          
-         $data['tanpa_keterangan'] = Absensi::where('keterangan', 'Tidak Absen')->whereMonth('tanggal',2)->count();
+         $data['tanpa_keterangan'] = Absensi::where('keterangan', 'Tidak Absen')->whereMonth('tanggal',date('m'))->count();
          
          $chart_performance[] = [
              'name' => 'Tepat Waktu',
