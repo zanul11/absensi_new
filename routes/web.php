@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenPulangController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JadwalAbsenController;
+use App\Http\Controllers\JadwalShiftController;
 use App\Http\Controllers\JenisIzinController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\LaporanAbsenController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\PostingAbsenController;
 use App\Http\Controllers\RequestAbsenPulangController;
 use App\Http\Controllers\RincianAbsenController;
+use App\Http\Controllers\ShiftPegawaiController;
 use App\Http\Controllers\TglLiburController;
 use App\Http\Controllers\TidakMasukController;
 use App\Models\AbsenPulang;
@@ -70,10 +72,10 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('request_absen_pulang', RequestAbsenPulangController::class);
 
     Route::get('tidak_masuk/data', [TidakMasukController::class, 'data'])
-    ->name('tidak_masuk.data');
+        ->name('tidak_masuk.data');
     Route::post('tidak_masuk/verifikasi', [TidakMasukController::class, 'verifikasi'])
         ->name('tidak_masuk.verifikasi');
-    Route::resource('tidak_masuk', TidakMasukController::class);   
+    Route::resource('tidak_masuk', TidakMasukController::class);
 
     Route::resource('posting_absen', PostingAbsenController::class);
     Route::resource('laporan_absen', LaporanAbsenController::class);
@@ -81,5 +83,13 @@ Route::middleware('auth:web')->group(function () {
 
     Route::resource('informasi', HomeController::class);
     Route::get('/home/posting', [HomeController::class, 'data'])->name('home');
+
+    Route::get('jadwal_shift/data', [JadwalShiftController::class, 'data'])
+        ->name('jadwal_shift.data');
+    Route::resource('jadwal_shift', JadwalShiftController::class);
+
+    Route::get('shift_pegawai/data', [ShiftPegawaiController::class, 'data'])
+        ->name('shift_pegawai.data');
+    Route::resource('shift_pegawai', ShiftPegawaiController::class);
 });
 Route::get('/home', [HomeController::class, 'index'])->name('home');

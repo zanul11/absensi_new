@@ -3,7 +3,7 @@
 @push('style')
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/datatables.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('plugins/table/datatable/dt-global_style.css')}}">
-
+<link href="{{asset('plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
 @endpush
 @section('content')
 <div class="layout-px-spacing">
@@ -12,25 +12,20 @@
             <div class="widget-content widget-content-area">
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
-                    <h3 class="">Data {{ucwords($page_name)}}</h3>
-                    <a href="{{route('pegawai.create')}}" class="mt-2 edit-profile">
+                    <h3 class="">Data {{ucwords(str_replace('_', ' ',$page_name))}}</h3>
+                    <a href="{{route('shift_pegawai.create')}}" class="mt-2 edit-profile">
                         <i data-feather="plus"></i></a>
-                       
-                </div><br>
+                </div>
                 <div class="table-responsive">
-                    <a class="btn btn-success btn-lg mb-3 mr-3" href="{{route('pegawai.import')}}">Import</a>
                     <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
                         <thead>
                             <tr>
                                 <th style="width: 5%">#</th>
-                                <th>NIP</th>
-                                <th>Nama </th>
-                                <th>Username</th>
-                                <th>Alamat</th>
-                                <th>No Hp</th>
+                                <th>Tanggal</th>
                                 <th>Shift</th>
-                                {{-- <th>Lokasi Absen</th> --}}
-                                <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
+                                <th>Pegawai </th>
+                                <th>Keterangan</th>
+                                <th style="width: 10% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -49,8 +44,14 @@
 @push('scripts')
 @include('inc.swal-delete')
 
+<script src="{{asset('plugins/flatpickr/flatpickr.js')}}"></script>
 <script src="{{asset('plugins/table/datatable/datatables.js')}}"></script>
 <script>
+    $(".basicFlatpickr").flatpickr({
+        mode: "range",
+        dateFormat: "d-m-Y",
+
+    });
     $('#datatable').DataTable({
         "oLanguage": {
             "oPaginate": {
@@ -66,38 +67,35 @@
         serverSide: true,
         responsive: true,
         lengthChange: true,
-        ajax: "{!! route('pegawai.data') !!}",
+        pageLength: 100,
+        lengthMenu: [
+       
+        100, 250, 500, 'All'
+    ],
+        ajax: "{!! route('shift_pegawai.data') !!}",
         columns: [{
                 data: 'id',
                 name: 'id',
                 render: function(data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
-            }, {
-                data: 'nip',
-                name: 'nip'
-            }, {
-                data: 'name',
-                name: 'name'
-            }, {
-                data: 'username',
-                name: 'username'
             },
             {
-                data: 'alamat',
-                name: 'alamat'
-            }, {
-                data: 'nohp',
-                name: 'nohp'
-            }, 
+                data: 'tanggal',
+                name: 'tanggal'
+            },
             {
                 data: 'shift',
                 name: 'shift'
-            }, 
-            // {
-            //     data: 'lokasi.name',
-            //     name: 'lokasi.name'
-            // },
+            },
+            {
+                data: 'pegawai.name',
+                name: 'pegawai.name'
+            }, {
+                data: 'keterangan',
+                name: 'keterangan'
+            },
+            
             {
                 data: 'action',
                 name: 'action'

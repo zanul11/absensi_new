@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Password</p>
-                                    <input id="password" type="text" name="password" class="form-control" required>
+                                    <input id="password" type="text" name="password" class="form-control" {{request()->routeIs('pegawai.create')?'required':''}}>
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Nip</p>
@@ -58,9 +58,21 @@
                                     <p>Nama</p>
                                     <input id="name" type="text" name="name" class="form-control" value="{{ old('name',$pegawai->name??'') }}" required>
                                 </div>
-                                <div class="form-group col-lg-12 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-8 col-md-12 col-xs-12">
                                     <p>Alamat</p>
                                     <input id="alamat" type="text" name="alamat" class="form-control" value="{{ old('alamat',$pegawai->alamat??'') }}" required>
+                                </div>
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
+                                    <p>Pegawai Shift</p>
+                                    <select class="form-control" name="is_shift">
+                                        <option value="0" {{ old('is_shift',$pegawai->is_shift??'')==0 ? 'selected' : '' }}>
+                                            TIDAK 
+                                        </option>
+                                        <option value="1" {{ old('is_shift',$pegawai->is_shift??'')==1 ? 'selected' : '' }}>
+                                            IYA
+                                        </option>
+
+                                    </select>
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>No Hp</p>

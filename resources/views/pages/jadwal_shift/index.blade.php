@@ -12,24 +12,21 @@
             <div class="widget-content widget-content-area">
                 <div class="d-flex justify-content-between">
                     <!-- <h5 class="">Data {{ucwords($page_name)}}</h5> -->
-                    <h3 class="">Data {{ucwords($page_name)}}</h3>
-                    <a href="{{route('pegawai.create')}}" class="mt-2 edit-profile">
+                    <h3 class="">Data {{ucwords(str_replace('_', ' ',$page_name))}}</h3>
+                    <a href="{{route('jadwal_shift.create')}}" class="mt-2 edit-profile">
                         <i data-feather="plus"></i></a>
-                       
                 </div><br>
                 <div class="table-responsive">
-                    <a class="btn btn-success btn-lg mb-3 mr-3" href="{{route('pegawai.import')}}">Import</a>
                     <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
                         <thead>
                             <tr>
                                 <th style="width: 5%">#</th>
-                                <th>NIP</th>
-                                <th>Nama </th>
-                                <th>Username</th>
-                                <th>Alamat</th>
-                                <th>No Hp</th>
-                                <th>Shift</th>
-                                {{-- <th>Lokasi Absen</th> --}}
+                                <th>Nama</th>
+                                <th>Jam Masuk</th>
+                                <th>Jam Pulang</th>
+                                <th>Jam Keluar Istirahat</th>
+                                <th>Jam Masuk Istirahat</th>
+                                <th>User </th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -66,7 +63,7 @@
         serverSide: true,
         responsive: true,
         lengthChange: true,
-        ajax: "{!! route('pegawai.data') !!}",
+        ajax: "{!! route('jadwal_shift.data') !!}",
         columns: [{
                 data: 'id',
                 name: 'id',
@@ -74,30 +71,29 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             }, {
-                data: 'nip',
-                name: 'nip'
-            }, {
-                data: 'name',
-                name: 'name'
-            }, {
-                data: 'username',
-                name: 'username'
+                data: 'nama',
+                name: 'nama'
             },
             {
-                data: 'alamat',
-                name: 'alamat'
-            }, {
-                data: 'nohp',
-                name: 'nohp'
-            }, 
+                data: 'jam_masuk',
+                name: 'jam_masuk'
+            },
             {
-                data: 'shift',
-                name: 'shift'
-            }, 
-            // {
-            //     data: 'lokasi.name',
-            //     name: 'lokasi.name'
-            // },
+                data: 'jam_pulang',
+                name: 'jam_pulang'
+            },
+            {
+                data: 'jam_keluar_istirahat',
+                name: 'jam_keluar_istirahat',
+            },
+            {
+                data: 'jam_masuk_istirahat',
+                name: 'jam_masuk_istirahat',
+            },
+            {
+                data: 'user_detail',
+                name: 'user'
+            },
             {
                 data: 'action',
                 name: 'action'

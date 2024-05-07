@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use App\Models\JadwalAbsen;
 use App\Models\JenisIzin;
 use App\Models\Pegawai;
+use App\Models\ShiftPegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use DateTime;
@@ -39,53 +40,69 @@ class RincianAbsenController extends Controller
             foreach ($absen as $r) {
                 $jam_kerja = '0 Jam 0 Menit';
                 $diff_mins = 0;
-                $assigned_time =null;
-                $completed_time=null;
+                $assigned_time = null;
+                $completed_time = null;
                 $jadwal = JadwalAbsen::where('hari', date('N'))->first();
-                if($r->keterangan != 'Tidak Absen'){
-                    $jam_pulang = $jadwal->jam_pulang;
-                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jadwal->jam_masuk_istirahat;
-                    $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): $jadwal->jam_pulang;
+                $jadwal_pegawai_shift = null;
+                if ($peg->is_shift == 1) {
+                    $jadwal_pegawai_shift = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $r->tanggal)->whereDate('tanggal_selesai', '>=', $r->tanggal)->first();
+                    if (!$jadwal_pegawai_shift) {
+                        alert()->warning('Warning', 'Pegawai ' . $peg->name . ' Tidak Memiliki Shift !!');
+                    }
+                }
+                if ($r->keterangan != 'Tidak Absen') {
+                    $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
+                    $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
+                    $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
                     $d1 = new DateTime($assigned_time);
-                    $d2 = new DateTime($completed_time);
+
+                    if (date('H', strtotime($jam_masuk)) > 18 || date('H', strtotime($jam_pulang)) == 0) {
+                        $d2 = new DateTime($completed_time . ' +1 day');
+                    } else {
+                        $d2 = new DateTime($completed_time);
+                    }
+
                     $interval = $d2->diff($d1);
                     $jam_kerja = $interval->format('%H Jam %i Menit');
                     $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
                 }
                 // return JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                $start_datetime = new DateTime(date('Y-m-d').' '.$jadwal->jam_masuk_toleransi);
-                $end_datetime = new DateTime(date('Y-m-d').' '.$assigned_time);
+                if ($peg->is_shift == 0)
+                    $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
+                else
+                    $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+                $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
 
                 // echo ($start_datetime->diff($end_datetime));
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    'jam_masuk'=>$jadwal->jam_masuk_toleransi,
+                    'jam_masuk' => ($peg->is_shift == 0) ? $jadwal->jam_masuk_toleransi : $jadwal_pegawai_shift->shift->jam_masuk,
                     'hari' => $r->hari,
                     'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
                     'kembali' => $r->jam_masuk_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
-                    'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
-                    'd1'=> $assigned_time,
-                    'd2'=> $completed_time,
-                    'telat'=>($start_datetime->diff($end_datetime))->format('%H:%i'),
+                    'keterangan' => ($r->is_telat == 1 && $r->keterangan != 'Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan != 'Tidak Absen') ? 'Tepat Waktu' : $r->keterangan))),
+                    'd1' => $assigned_time,
+                    'd2' => $completed_time,
+                    'telat' => ($start_datetime->diff($end_datetime))->format('%H:%i'),
                     'jam_kerja' => $jam_kerja,
                     'menit' => $diff_mins
                 ];
-
             }
-            
-             $data[] = [
+
+            $data[] = [
                 'id' => $peg->id,
                 'nip' => $peg->nip,
                 'name' => $peg->name,
                 'data' => $data_absen
             ];
-
         }
-             $data=collect($data);
-        
+        $data = collect($data);
+
         return view('pages.absensi.rincian_absen.index', compact('data', 'jenis_izin'))->with($this->data);
     }
     public function create()
@@ -118,52 +135,66 @@ class RincianAbsenController extends Controller
             foreach ($absen as $r) {
                 $jam_kerja = '0 Jam 0 Menit';
                 $diff_mins = 0;
-                $assigned_time =null;
-                $completed_time=null;
+                $assigned_time = null;
+                $completed_time = null;
                 $jadwal = JadwalAbsen::where('hari', date('N'))->first();
-                if($r->keterangan != 'Tidak Absen'){
-                    $jam_pulang = $jadwal->jam_pulang;
-                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jadwal->jam_masuk_istirahat;
-                    $completed_time = ($r->jam_pulang!=null) ?((strtotime($r->jam_pulang)> strtotime($jam_pulang))?$jam_pulang:$r->jam_pulang ): $jadwal->jam_pulang;
+                $jadwal_pegawai_shift = null;
+                if ($peg->is_shift == 1) {
+                    $jadwal_pegawai_shift = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $r->tanggal)->whereDate('tanggal_selesai', '>=', $r->tanggal)->first();
+                    if (!$jadwal_pegawai_shift) {
+                        alert()->warning('Warning', 'Pegawai ' . $peg->name . ' Tidak Memiliki Shift !!');
+                    }
+                }
+                if ($r->keterangan != 'Tidak Absen') {
+                    $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
+                    $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+
+                    $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
+                    $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
                     $d1 = new DateTime($assigned_time);
-                    $d2 = new DateTime($completed_time);
+                    if (date('H', strtotime($jam_masuk)) > 18 || date('H', strtotime($jam_pulang)) == 0) {
+                        $d2 = new DateTime($completed_time . ' +1 day');
+                    } else {
+                        $d2 = new DateTime($completed_time);
+                    }
                     $interval = $d2->diff($d1);
                     $jam_kerja = $interval->format('%H Jam %i Menit');
                     $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
                 }
                 // return JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                $start_datetime = new DateTime(date('Y-m-d').' '.$jadwal->jam_masuk_toleransi);
-                $end_datetime = new DateTime(date('Y-m-d').' '.$assigned_time);
+                if ($peg->is_shift == 0)
+                    $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
+                else
+                    $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+                $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
 
                 // echo ($start_datetime->diff($end_datetime));
                 $data_absen[] = [
                     'tgl' => $r->tanggal,
-                    'jam_masuk'=>$jadwal->jam_masuk_toleransi,
+                    'jam_masuk' => ($peg->is_shift == 0) ? $jadwal->jam_masuk_toleransi : $jadwal_pegawai_shift->shift->jam_masuk,
                     'hari' => $r->hari,
                     'masuk' => $r->jam_masuk,
                     'pulang' => $r->jam_pulang,
                     'keluar' => $r->jam_keluar_istirahat ?? $r->jam_pulang_istirahat,
                     'kembali' => $r->jam_masuk_istirahat,
                     'status' => ($r->is_telat == 1) ? 'Terlambat' : (($r->jenis_izin_id != null) ? 'Izin' : (($r->jenis_izin_id == null && $r->jam_masuk == null && $r->jam_pulang == null && $r->hari != 0) ? 'Tanpa Keterangan' : (($r->hari == 0 && $r->status == 1) ? 'Hari Libur' : 'Tepat Waktu'))),
-                    'keterangan' => ($r->is_telat == 1 && $r->keterangan!='Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan!='Tidak Absen') ?'Tepat Waktu':$r->keterangan))),
-                    'd1'=> $assigned_time,
-                    'd2'=> $completed_time,
-                    'telat'=>($start_datetime->diff($end_datetime))->format('%H:%i'),
+                    'keterangan' => ($r->is_telat == 1 && $r->keterangan != 'Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan != 'Tidak Absen') ? 'Tepat Waktu' : $r->keterangan))),
+                    'd1' => $assigned_time,
+                    'd2' => $completed_time,
+                    'telat' => ($start_datetime->diff($end_datetime))->format('%H:%i'),
                     'jam_kerja' => $jam_kerja,
                     'menit' => $diff_mins
                 ];
-
             }
-            
-             $data[] = [
+
+            $data[] = [
                 'id' => $peg->id,
                 'nip' => $peg->nip,
                 'name' => $peg->name,
                 'data' => $data_absen
             ];
-
         }
-         
+
 
         return view('pages.absensi.rincian_absen.cetak', compact('data'))->with($this->data);
     }

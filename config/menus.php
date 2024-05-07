@@ -29,6 +29,15 @@ return [
                     'id' => 'jadwal absen',
                     'url' => 'jadwal_absen',
                     'title' => 'jadwal absen'
+                ],[
+                    'id' => 'jadwal shift',
+                    'url' => 'jadwal_shift',
+                    'title' => 'jadwal shift'
+                ],
+                [
+                    'id' => 'shift pegawai',
+                    'url' => 'shift_pegawai',
+                    'title' => 'shift pegawai'
                 ]
             ]
         ],
@@ -48,7 +57,8 @@ return [
                     'id' => 'jenis izin',
                     'url' => 'jenis_izin',
                     'title' => 'jenis izin'
-                ]
+                ],
+                
             ]
         ],
         [
@@ -135,6 +145,17 @@ return [
                     'id' => 'jadwal absen',
                     'url' => 'jadwal_absen',
                     'title' => 'jadwal absen'
+                ],
+                
+                [
+                    'id' => 'jadwal shift',
+                    'url' => 'jadwal_shift',
+                    'title' => 'jadwal shift'
+                ],
+                [
+                    'id' => 'shift pegawai',
+                    'url' => 'shift_pegawai',
+                    'title' => 'shift pegawai'
                 ]
             ]
         ],

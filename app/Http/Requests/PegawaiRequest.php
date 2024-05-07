@@ -26,11 +26,11 @@ class PegawaiRequest extends FormRequest
             "username" => ["required", "string"],
             "nip" => ["required", "string"],
             "name" => ["required", "string"],
-            "password" => ["required", "string"],
             "alamat" => ["required", "string"],
             "nohp" => ["required", "string", "min:8"],
             "location_id" => ["required", "exists:locations,id"],
             "user" => ["required", "string"],
+            "is_shift" => ["required", "boolean"],
         ];
     }
 
@@ -39,7 +39,6 @@ class PegawaiRequest extends FormRequest
         $this->merge([
             'username' => str_replace(' ', '', strtolower($this->username)),
             'user' => Auth::user()->name,
-            'password' => bcrypt($this->password),
         ]);
     }
 }
