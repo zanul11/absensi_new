@@ -69,8 +69,8 @@ class ApiController extends Controller
             $keterangan_jam_istirahat = ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal->jam_masuk_istirahat));
         } else {
             $jadwal_pegawai = ShiftPegawai::with('shift')->where('pegawai_id', $id)->whereDate('tanggal_mulai', '<=', date('Y-m-d'))->whereDate('tanggal_selesai', '>=', date('Y-m-d'))->first();
-            $keterangan_jam = date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_pulang));
-            $keterangan_jam_istirahat = date('H:i', strtotime($jadwal_pegawai->shift->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk_istirahat));
+            $keterangan_jam = ($jadwal_pegawai) ?  (date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_pulang))) : 'Tidak Ada Shift';
+            $keterangan_jam_istirahat = ($jadwal_pegawai) ? (date('H:i', strtotime($jadwal_pegawai->shift->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk_istirahat))) : '';
         }
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
         $data = [];
@@ -449,7 +449,7 @@ class ApiController extends Controller
         $data = [];
         $peg = Pegawai::where('id', $id)->first();
         $jadwal = JadwalAbsen::where('hari', date('N'))->first();
-      
+
         foreach ($absen as $r) {
             $jadwal_pegawai_shift = null;
             if ($peg->is_shift == 1) {
