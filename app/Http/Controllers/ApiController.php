@@ -393,7 +393,7 @@ class ApiController extends Controller
                             'error' => true,
                             'data' => 'Belum waktunya absen pulang!',
                         ]);
-                    } else if (date('H') >= date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour')) && date('H') <= date('H', strtotime($shift_pegawai->shift->jam_pulang . '+3 hour'))) {
+                    } else if (date('H') >= date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour')) && date('yyyy-mm-dd H') <= date('yyyy-mm-dd H', strtotime($shift_pegawai->shift->jam_pulang . '+3 hour'))) {
                         //absen pulang
                         $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
                         if (!$cek_sudah_absen) {
