@@ -59,7 +59,7 @@ class PostingAbsenController extends Controller
             $getTgl = date('Y-m-d', strtotime("+" . $i . " day", strtotime($tanggal[0])));
             $cekHariKerja = JadwalAbsen::where('hari', $getHari)->first();
             $cekHariLibur = TglLibur::whereDate('tgl_libur', $getTgl)->first();
-            $pegawai = Pegawai::all();
+            $pegawai = Pegawai::where('status_pegawai', 1)->get();
             foreach ($pegawai as $peg) {
                 if ($peg->is_shift == 0) {
                     //Jika Pegawai Normal

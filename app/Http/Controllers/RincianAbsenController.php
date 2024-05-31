@@ -125,7 +125,7 @@ class RincianAbsenController extends Controller
     {
         $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-01')));
         $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
-        $pegawai = Pegawai::orderby('name')->get();
+        $pegawai = Pegawai::where('status_pegawai', 1)->orderby('name')->get();
         $jenis_izin = JenisIzin::orderBy('hak', 'asc')->get();
         $data_absen = [];
         $data = [];

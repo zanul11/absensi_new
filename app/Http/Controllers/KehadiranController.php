@@ -80,7 +80,7 @@ class KehadiranController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         $jenis_izin = JenisIzin::all();
         return view('pages.absensi.kehadiran.create', compact('pegawai', 'jenis_izin'))->with($this->data);
     }
@@ -104,7 +104,7 @@ class KehadiranController extends Controller
 
     public function edit(Kehadiran $kehadiran)
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         $jenis_izin = JenisIzin::all();
         return view('pages.absensi.kehadiran.create', compact('pegawai', 'jenis_izin', 'kehadiran'))->with($this->data);
     }

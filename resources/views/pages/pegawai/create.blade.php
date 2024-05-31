@@ -58,11 +58,23 @@
                                     <p>Nama</p>
                                     <input id="name" type="text" name="name" class="form-control" value="{{ old('name',$pegawai->name??'') }}" required>
                                 </div>
-                                <div class="form-group col-lg-8 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Alamat</p>
                                     <input id="alamat" type="text" name="alamat" class="form-control" value="{{ old('alamat',$pegawai->alamat??'') }}" required>
                                 </div>
-                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
+                                    <p>Status Pegawai</p>
+                                    <select class="form-control" name="status_pegawai">
+                                        <option value="1" {{ old('status_pegawai',$pegawai->status_pegawai??'')==1 ? 'selected' : '' }}>
+                                            Aktif 
+                                        </option>
+                                        <option value="0" {{ old('status_pegawai',$pegawai->status_pegawai??'')==0 ? 'selected' : '' }}>
+                                            Non Aktif
+                                        </option>
+
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
                                     <p>Pegawai Shift</p>
                                     <select class="form-control" name="is_shift">
                                         <option value="0" {{ old('is_shift',$pegawai->is_shift??'')==0 ? 'selected' : '' }}>

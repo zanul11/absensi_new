@@ -83,7 +83,7 @@ class TidakMasukController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         $jenis = JenisIzin::all();
         return view('pages.pengajuan.tidak_masuk.create', compact('pegawai', 'jenis'))->with($this->data);
     }
@@ -105,7 +105,7 @@ class TidakMasukController extends Controller
 
     public function show(TidakMasuk $tidakMasuk)
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         $jenis = JenisIzin::all();
         return view('pages.pengajuan.tidak_masuk.show', compact('pegawai', 'jenis','tidakMasuk'))->with($this->data);
     }
@@ -113,7 +113,7 @@ class TidakMasukController extends Controller
   
     public function edit(TidakMasuk $tidakMasuk)
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         $jenis = JenisIzin::all();
         return view('pages.pengajuan.tidak_masuk.create', compact('pegawai', 'jenis','tidakMasuk'))->with($this->data);
     }

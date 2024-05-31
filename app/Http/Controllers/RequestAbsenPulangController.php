@@ -81,7 +81,7 @@ class RequestAbsenPulangController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         return view('pages.pengajuan.absen_pulang.create', compact('pegawai'))->with($this->data);
     }
 
@@ -112,14 +112,14 @@ class RequestAbsenPulangController extends Controller
     public function show(RequestAbsenPulang $requestAbsenPulang)
     {
         // return $requestAbsenPulang;
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         return view('pages.pengajuan.absen_pulang.show', compact('pegawai', 'requestAbsenPulang'))->with($this->data);
     }
 
 
     public function edit(RequestAbsenPulang $requestAbsenPulang)
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::where('status_pegawai', 1)->get();
         return view('pages.pengajuan.absen_pulang.create', compact('pegawai', 'requestAbsenPulang'))->with($this->data);
     }
 

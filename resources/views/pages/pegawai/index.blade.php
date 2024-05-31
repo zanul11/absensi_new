@@ -24,6 +24,7 @@
                             <tr>
                                 <th style="width: 5%">#</th>
                                 <th>NIP</th>
+                                <th>Status</th>
                                 <th>Nama </th>
                                 <th>Username</th>
                                 <th>Alamat</th>
@@ -76,7 +77,12 @@
             }, {
                 data: 'nip',
                 name: 'nip'
-            }, {
+            },
+            {
+                data: 'status',
+                name: 'status_pegawai'
+            },
+             {
                 data: 'name',
                 name: 'name'
             }, {
