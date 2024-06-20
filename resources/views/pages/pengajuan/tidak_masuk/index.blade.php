@@ -119,7 +119,7 @@
             },
             {
                 data: 'tanggal',
-                name: 'tanggal'
+                name: 'tanggal_mulai'
             },
             {
                 data: 'jenis_izin.name',
