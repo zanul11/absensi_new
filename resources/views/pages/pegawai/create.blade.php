@@ -62,7 +62,7 @@
                                     <p>Alamat</p>
                                     <input id="alamat" type="text" name="alamat" class="form-control" value="{{ old('alamat',$pegawai->alamat??'') }}" required>
                                 </div>
-                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
                                     <p>Status Pegawai</p>
                                     <select class="form-control" name="status_pegawai">
                                         <option value="1" {{ old('status_pegawai',$pegawai->status_pegawai??'')==1 ? 'selected' : '' }}>
@@ -74,13 +74,25 @@
 
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-3 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
                                     <p>Pegawai Shift</p>
                                     <select class="form-control" name="is_shift">
                                         <option value="0" {{ old('is_shift',$pegawai->is_shift??'')==0 ? 'selected' : '' }}>
                                             TIDAK 
                                         </option>
                                         <option value="1" {{ old('is_shift',$pegawai->is_shift??'')==1 ? 'selected' : '' }}>
+                                            IYA
+                                        </option>
+
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
+                                    <p>Operator</p>
+                                    <select class="form-control" name="is_operator">
+                                        <option value="0" {{ old('is_operator',$pegawai->is_operator??'')==0 ? 'selected' : '' }}>
+                                            TIDAK 
+                                        </option>
+                                        <option value="1" {{ old('is_operator',$pegawai->is_operator??'')==1 ? 'selected' : '' }}>
                                             IYA
                                         </option>
 

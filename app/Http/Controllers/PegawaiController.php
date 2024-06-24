@@ -28,6 +28,9 @@ class PegawaiController extends Controller
             ->addColumn('shift', function ($data) {
                 return ($data->is_shift == 0) ? '<span class="badge badge-danger"> Tidak </span>' : '<span class="badge badge-success"> Iya </span>';
             })
+            ->addColumn('operator', function ($data) {
+                return ($data->is_operator == 0) ? '<span class="badge badge-danger"> Tidak </span>' : '<span class="badge badge-success"> Iya </span>';
+            })
             ->addColumn('status', function ($data) {
                 return ($data->status_pegawai == 0) ? '<span class="badge badge-danger"> Tidak Aktif </span>' : '<span class="badge badge-success"> Aktif </span>';
             })
@@ -41,7 +44,7 @@ class PegawaiController extends Controller
 
                 return $edit . '  ' . $delete;
             })
-            ->rawColumns(['action', 'shift', 'status'])
+            ->rawColumns(['action', 'shift', 'status', 'operator'])
             ->make(true);
     }
 

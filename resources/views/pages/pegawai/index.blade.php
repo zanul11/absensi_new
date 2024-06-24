@@ -30,7 +30,8 @@
                                 <th>Alamat</th>
                                 <th>No Hp</th>
                                 <th>Shift</th>
-                                {{-- <th>Lokasi Absen</th> --}}
+                                <th>Operator</th>
+                                 <th>Lokasi Absen</th> 
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -100,10 +101,14 @@
                 data: 'shift',
                 name: 'shift'
             }, 
-            // {
-            //     data: 'lokasi.name',
-            //     name: 'lokasi.name'
-            // },
+            {
+                data: 'operator',
+                name: 'operator'
+            }, 
+            {
+                data: 'lokasi.name',
+                name: 'lokasi.name'
+            },
             {
                 data: 'action',
                 name: 'action'
