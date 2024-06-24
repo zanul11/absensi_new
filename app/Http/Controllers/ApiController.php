@@ -129,7 +129,7 @@ class ApiController extends Controller
     {
         // return $location;
         try {
-            $pegawai = Pegawai::where('id', $id)->first();
+            $pegawai = Pegawai::with('lokasi')->where('id', $id)->first();
             if ($pegawai->is_shift == 0) {
                 //JIKA PEGAWAI NORMAL
                 $jadwal = JadwalAbsen::where('hari', date('N'))->first();
@@ -138,6 +138,13 @@ class ApiController extends Controller
                         'status' => 200,
                         'error' => true,
                         'data' => 'Hari Libur, Tidak Bisa Absen',
+                    ]);
+                }
+                if ($pegawai->lokasi->name != $location) {
+                    return response()->json([
+                        'status' => 200,
+                        'error' => true,
+                        'data' => 'Lokasi Tidak Sesuai, Tidak Bisa Absen',
                     ]);
                 }
                 if (date('H') > 6 && date('H:i') < date('H:i', strtotime($jadwal->jam_keluar_istirahat))) {
