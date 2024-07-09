@@ -464,7 +464,7 @@ class ApiController extends Controller
             if ($peg->is_shift == 1) {
                 $jadwal_pegawai_shift = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $r->tanggal)->whereDate('tanggal_selesai', '>=', $r->tanggal)->first();
                 if (!$jadwal_pegawai_shift) {
-                    $hitung_absen = true;
+                    $hitung_absen = false;
                 }
             }
             if ($hitung_absen) {
