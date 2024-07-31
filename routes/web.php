@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenPulangController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JadwalAbsenController;
+use App\Http\Controllers\JadwalOperatorController;
 use App\Http\Controllers\JadwalShiftController;
 use App\Http\Controllers\JenisIzinController;
 use App\Http\Controllers\KehadiranController;
@@ -91,5 +92,9 @@ Route::middleware('auth:web')->group(function () {
     Route::get('shift_pegawai/data', [ShiftPegawaiController::class, 'data'])
         ->name('shift_pegawai.data');
     Route::resource('shift_pegawai', ShiftPegawaiController::class);
+
+    Route::get('jadwal_operator/data', [JadwalOperatorController::class, 'data'])
+    ->name('jadwal_operator.data');
+Route::resource('jadwal_operator', JadwalOperatorController::class);
 });
 Route::get('/home', [HomeController::class, 'index'])->name('home');

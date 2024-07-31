@@ -17,4 +17,9 @@ class Pegawai extends Authenticatable
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
+
+    public function jadwal_operator()
+    {
+        return $this->belongsTo(JadwalOperator::class, 'jadwal_operator_id');
+    }
 }

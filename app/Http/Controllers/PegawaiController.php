@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\TemplatePegawai;
 use App\Http\Requests\PegawaiRequest;
 use App\Imports\ImportPegawai;
+use App\Models\JadwalOperator;
 use App\Models\Location;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
@@ -56,7 +57,8 @@ class PegawaiController extends Controller
     public function create()
     {
         $locations = Location::all();
-        return view('pages.pegawai.create', compact('locations'))->with($this->data);
+        $jadwal_operator = JadwalOperator::get();
+        return view('pages.pegawai.create', compact('locations', 'jadwal_operator'))->with($this->data);
     }
 
     public function import()
@@ -104,8 +106,9 @@ class PegawaiController extends Controller
 
     public function edit(Pegawai $pegawai)
     {
+        $jadwal_operator = JadwalOperator::get();
         $locations = Location::all();
-        return view('pages.pegawai.create', compact('locations', 'pegawai'))->with($this->data);
+        return view('pages.pegawai.create', compact('locations', 'pegawai', 'jadwal_operator'))->with($this->data);
     }
 
 

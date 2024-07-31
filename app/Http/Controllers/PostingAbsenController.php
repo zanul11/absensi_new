@@ -12,6 +12,7 @@ use App\Models\TglLibur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class PostingAbsenController extends Controller
 {
@@ -22,6 +23,14 @@ class PostingAbsenController extends Controller
 
     public function index()
     {
+        if (isset(request()->tanggal)) {
+            $tanggal = (explode("to", str_replace(' ', '', request()->tanggal)));
+            Cache::put('dTgl', $tanggal[0]);
+            Cache::put('sTgl', $tanggal[1] ?? $tanggal[0]);
+        } else {
+            Cache::put('dTgl', date('01-m-Y'));
+            Cache::put('sTgl', date('d-m-Y'));
+        }
         return view('pages.absensi.posting_absen.index')->with($this->data);
     }
 
@@ -59,10 +68,10 @@ class PostingAbsenController extends Controller
             $getTgl = date('Y-m-d', strtotime("+" . $i . " day", strtotime($tanggal[0])));
             $cekHariKerja = JadwalAbsen::where('hari', $getHari)->first();
             $cekHariLibur = TglLibur::whereDate('tgl_libur', $getTgl)->first();
-            $pegawai = Pegawai::where('status_pegawai', 1)->get();
+            $pegawai = Pegawai::where('status_pegawai', 1)->with('jadwal_operator')->get();
             foreach ($pegawai as $peg) {
                 if ($peg->is_shift == 0) {
-                    //Jika Pegawai Normal
+                    //Jika Pegawai Normal dan Operator
                     if ($cekHariKerja->status == 0) {
                         //jika hari libur
                         $data[] = [
@@ -87,6 +96,7 @@ class PostingAbsenController extends Controller
                             "jadwal_pulang" => null,
                         ];
                     } else {
+
                         //jika hari kerja masuk status=1
                         if ($cekHariLibur) {
                             //jika hari kerja adalah hari libur
@@ -113,6 +123,7 @@ class PostingAbsenController extends Controller
                                 "jadwal_pulang" => null,
                             ];
                         } else {
+
                             Kehadiran::whereNotNull('deleted_at')
                                 ->where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->withTrashed()->update([
                                     'deleted_at' => null
@@ -151,27 +162,53 @@ class PostingAbsenController extends Controller
                                     $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('jam', 'desc')->first();
                                     $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
                                     $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => $getAbsenMasuk->keterangan,
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => $getAbsenMasuk->jam ?? null,
-                                        "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime($cekHariKerja->jam_masuk_toleransi)) ? 0 : 1) : 1,
-                                        "jam_pulang" => $getAbsenPulang->jam ?? null,
-                                        "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
-                                        "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
-                                    ];
+                                    if ($peg->is_operator == 0) {
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => $getAbsenMasuk->keterangan,
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => $getAbsenMasuk->jam ?? null,
+                                            "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime($cekHariKerja->jam_masuk_toleransi)) ? 0 : 1) : 1,
+                                            "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                            "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                            "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                            "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
+                                            "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
+                                        ];
+                                    } else {
+
+                                        //jika operator
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => $getAbsenMasuk->keterangan,
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => $getAbsenMasuk->jam ?? null,
+                                            "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime('+30 minutes', strtotime($peg->jadwal_operator->jam_masuk))) ? 0 : 1) : 1,
+                                            "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                            "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($peg->jadwal_operator->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => null,
+                                            "jam_masuk_istirahat" => null,
+                                            "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $peg->jadwal_operator->jam_masuk,
+                                            "jadwal_pulang" => $peg->jadwal_operator->jam_pulang,
+                                        ];
+                                    }
                                 }
                             } else {
                                 //tidak absen
@@ -181,222 +218,243 @@ class PostingAbsenController extends Controller
                                 if ($getAbsenPulang) {
                                     //tidak absen masuk tapi absen pulang
                                     // return $cekHariKerja->jam_pulang_toleransi;
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => 'Tidak Absen Masuk',
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => null,
-                                        "is_telat" => 1,
-                                        "jam_pulang" => $getAbsenPulang->jam ?? null,
-                                        "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
-                                        "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
-                                    ];
+                                    if ($peg->is_operator == 0) {
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => 'Tidak Absen Masuk',
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => null,
+                                            "is_telat" => 1,
+                                            "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                            "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($cekHariKerja->jam_pulang_toleransi) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                            "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                            "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
+                                            "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
+                                        ];
+                                    } else {
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => 'Tidak Absen Masuk',
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => null,
+                                            "is_telat" => 1,
+                                            "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                            "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($peg->jadwal_operator->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => null,
+                                            "jam_masuk_istirahat" =>  null,
+                                            "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $peg->jadwal_operator->jam_masuk,
+                                            "jadwal_pulang" => $peg->jadwal_operator->jam_pulang,
+                                        ];
+                                    }
                                 } else {
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => 'Tidak Absen',
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => null,
-                                        "is_telat" => 1,
-                                        "jam_pulang" => null,
-                                        "is_pulang_cepat" => 1,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
-                                        "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
-                                    ];
+                                    if ($peg->is_operator == 0) {
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => 'Tidak Absen',
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => null,
+                                            "is_telat" => 1,
+                                            "jam_pulang" => null,
+                                            "is_pulang_cepat" => 1,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                            "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                            "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($cekHariKerja->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $cekHariKerja->jam_masuk_toleransi,
+                                            "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
+                                        ];
+                                    } else {
+                                        $data[] = [
+                                            "id" => Str::uuid(),
+                                            "pegawai_id" => $peg->id,
+                                            "tanggal" => $getTgl,
+                                            "hari" => 1,
+                                            "status" => 1,
+                                            "keterangan" => 'Tidak Absen',
+                                            "jenis_izin_id" => null,
+                                            "jam_masuk" => null,
+                                            "is_telat" => 1,
+                                            "jam_pulang" => null,
+                                            "is_pulang_cepat" => 1,
+                                            "user" => Auth::user()->name,
+                                            "created_at" => date('Y-m-d H:i:s'),
+                                            "updated_at" => date('Y-m-d H:i:s'),
+                                            "jam_keluar_istirahat" => null,
+                                            "jam_masuk_istirahat" =>  null,
+                                            "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
+                                            "jadwal_masuk" => $peg->jadwal_operator->jam_masuk,
+                                            "jadwal_pulang" => $peg->jadwal_operator->jam_pulang,
+                                        ];
+                                    }
                                 }
                             }
                         }
                     }
                 } else {
                     //Jika Pegawai Shift
-                    if ($peg->is_operator == 1 && $cekHariKerja->status == 0) {
-                        //jika pegawai shift operator dan hari libur
-                        if ($cekHariKerja->status == 0) {
-                            //jika hari libur
-                            $data[] = [
-                                "id" => Str::uuid(),
-                                "pegawai_id" => $peg->id,
-                                "tanggal" => $getTgl,
-                                "hari" => 0,
-                                "status" => 0,
-                                "keterangan" => $this->getNamaHari($getHari),
-                                "jenis_izin_id" => null,
-                                "jam_masuk" => null,
-                                "is_telat" => 0,
-                                "jam_pulang" => null,
-                                "is_pulang_cepat" => 0,
-                                "user" => Auth::user()->name,
-                                "created_at" => date('Y-m-d H:i:s'),
-                                "updated_at" => date('Y-m-d H:i:s'),
-                                "jam_keluar_istirahat" => null,
-                                "jam_masuk_istirahat" => null,
-                                "is_telat_kembali" => 0,
-                                "jadwal_masuk" => null,
-                                "jadwal_pulang" => null,
-                            ];
-                        }
-                    } else {
-                        //jika pegawai shift oprator bukan hari libur / pegawai shift biasa
-                        $jadwal_shift_pegawai = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $getTgl)->whereDate('tanggal_selesai', '>=', $getTgl)->first();
-                        if (!$jadwal_shift_pegawai) {
-                            //jika hari tidak ada shift
-                            $data[] = [
-                                "id" => Str::uuid(),
-                                "pegawai_id" => $peg->id,
-                                "tanggal" => $getTgl,
-                                "hari" => 0,
-                                "status" => 0,
-                                "keterangan" => $this->getNamaHari($getHari),
-                                "jenis_izin_id" => null,
-                                "jam_masuk" => null,
-                                "is_telat" => 0,
-                                "jam_pulang" => null,
-                                "is_pulang_cepat" => 0,
-                                "user" => Auth::user()->name,
-                                "created_at" => date('Y-m-d H:i:s'),
-                                "updated_at" => date('Y-m-d H:i:s'),
-                                "jam_keluar_istirahat" => null,
-                                "jam_masuk_istirahat" => null,
-                                "is_telat_kembali" => 0,
-                                "jadwal_masuk" => null,
-                                "jadwal_pulang" => null,
-                            ];
-                        } else {
-                            //jika hari kerja masuk status=1
-                            Kehadiran::whereNotNull('deleted_at')
-                                ->where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->withTrashed()->update([
-                                    'deleted_at' => null
-                                ]);
 
-                            //jika hari kerja normal
-                            $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('jam', 'asc')->first();
-                            //absen masuk jenis=0 atau masuk
-                            if ($getAbsenMasuk) {
-                                //jika ada absen
-                                if (isset($getAbsenMasuk->jenis_izin_id)) {
-                                    //jika izin dihari kerja
-                                    $izin = JenisIzin::where('id', $getAbsenMasuk->jenis_izin_id)->first();
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => $izin->hak,
-                                        "keterangan" => $getAbsenMasuk->keterangan,
-                                        "jenis_izin_id" => $izin->id,
-                                        "jam_masuk" => null,
-                                        "is_telat" => 0,
-                                        "jam_pulang" => null,
-                                        "is_pulang_cepat" => 0,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => null,
-                                        "jam_masuk_istirahat" => null,
-                                        "is_telat_kembali" => 0,
-                                        "jadwal_masuk" => null,
-                                        "jadwal_pulang" => null,
-                                    ];
-                                } else {
-                                    //jika masuk
-                                    $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('jam', 'desc')->first();
-                                    $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
-                                    $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => $getAbsenMasuk->keterangan,
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => $getAbsenMasuk->jam ?? null,
-                                        "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime($jadwal_shift_pegawai->shift->jam_masuk)) ? 0 : 1) : 1,
-                                        "jam_pulang" => $getAbsenPulang->jam ?? null,
-                                        "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
-                                        "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
-                                    ];
-                                }
+                    //jika pegawai shift oprator bukan hari libur / pegawai shift biasa
+                    $jadwal_shift_pegawai = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $getTgl)->whereDate('tanggal_selesai', '>=', $getTgl)->first();
+                    if (!$jadwal_shift_pegawai) {
+                        //jika hari tidak ada shift
+                        $data[] = [
+                            "id" => Str::uuid(),
+                            "pegawai_id" => $peg->id,
+                            "tanggal" => $getTgl,
+                            "hari" => 0,
+                            "status" => 0,
+                            "keterangan" => $this->getNamaHari($getHari),
+                            "jenis_izin_id" => null,
+                            "jam_masuk" => null,
+                            "is_telat" => 0,
+                            "jam_pulang" => null,
+                            "is_pulang_cepat" => 0,
+                            "user" => Auth::user()->name,
+                            "created_at" => date('Y-m-d H:i:s'),
+                            "updated_at" => date('Y-m-d H:i:s'),
+                            "jam_keluar_istirahat" => null,
+                            "jam_masuk_istirahat" => null,
+                            "is_telat_kembali" => 0,
+                            "jadwal_masuk" => null,
+                            "jadwal_pulang" => null,
+                        ];
+                    } else {
+                        //jika hari kerja masuk status=1
+                        Kehadiran::whereNotNull('deleted_at')
+                            ->where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->withTrashed()->update([
+                                'deleted_at' => null
+                            ]);
+
+                        //jika hari kerja normal
+                        $getAbsenMasuk = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 0)->orderBy('jam', 'asc')->first();
+                        //absen masuk jenis=0 atau masuk
+                        if ($getAbsenMasuk) {
+                            //jika ada absen
+                            if (isset($getAbsenMasuk->jenis_izin_id)) {
+                                //jika izin dihari kerja
+                                $izin = JenisIzin::where('id', $getAbsenMasuk->jenis_izin_id)->first();
+                                $data[] = [
+                                    "id" => Str::uuid(),
+                                    "pegawai_id" => $peg->id,
+                                    "tanggal" => $getTgl,
+                                    "hari" => 1,
+                                    "status" => $izin->hak,
+                                    "keterangan" => $getAbsenMasuk->keterangan,
+                                    "jenis_izin_id" => $izin->id,
+                                    "jam_masuk" => null,
+                                    "is_telat" => 0,
+                                    "jam_pulang" => null,
+                                    "is_pulang_cepat" => 0,
+                                    "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => null,
+                                    "jam_masuk_istirahat" => null,
+                                    "is_telat_kembali" => 0,
+                                    "jadwal_masuk" => null,
+                                    "jadwal_pulang" => null,
+                                ];
                             } else {
-                                //tidak absen
-                                $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('tanggal', 'desc')->first();
+                                //jika masuk
+                                $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('jam', 'desc')->first();
                                 $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
                                 $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
-                                if ($getAbsenPulang) {
-                                    //tidak absen masuk tapi absen pulang
-                                    // return $cekHariKerja->jam_pulang_toleransi;
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => 'Tidak Absen Masuk',
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => null,
-                                        "is_telat" => 1,
-                                        "jam_pulang" => $getAbsenPulang->jam ?? null,
-                                        "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
-                                        "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
-                                    ];
-                                } else {
-                                    $data[] = [
-                                        "id" => Str::uuid(),
-                                        "pegawai_id" => $peg->id,
-                                        "tanggal" => $getTgl,
-                                        "hari" => 1,
-                                        "status" => 1,
-                                        "keterangan" => 'Tidak Absen',
-                                        "jenis_izin_id" => null,
-                                        "jam_masuk" => null,
-                                        "is_telat" => 1,
-                                        "jam_pulang" => null,
-                                        "is_pulang_cepat" => 1,
-                                        "user" => Auth::user()->name,
-                                        "created_at" => date('Y-m-d H:i:s'),
-                                        "updated_at" => date('Y-m-d H:i:s'),
-                                        "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
-                                        "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                        "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
-                                        "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
-                                        "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
-                                    ];
-                                }
+                                $data[] = [
+                                    "id" => Str::uuid(),
+                                    "pegawai_id" => $peg->id,
+                                    "tanggal" => $getTgl,
+                                    "hari" => 1,
+                                    "status" => 1,
+                                    "keterangan" => $getAbsenMasuk->keterangan,
+                                    "jenis_izin_id" => null,
+                                    "jam_masuk" => $getAbsenMasuk->jam ?? null,
+                                    "is_telat" => (isset($getAbsenMasuk->jam)) ? ((strtotime($getAbsenMasuk->jam) <= strtotime($jadwal_shift_pegawai->shift->jam_masuk)) ? 0 : 1) : 1,
+                                    "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                    "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                    "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
+                                    "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
+                                ];
+                            }
+                        } else {
+                            //tidak absen
+                            $getAbsenPulang = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 1)->orderBy('tanggal', 'desc')->first();
+                            $getAbsenKeluar = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 2)->first();
+                            $getAbsenKembali = Kehadiran::where('pegawai_id', $peg->id)->whereDate('tanggal', $getTgl)->where('jenis', 3)->first();
+                            if ($getAbsenPulang) {
+                                //tidak absen masuk tapi absen pulang
+                                // return $cekHariKerja->jam_pulang_toleransi;
+                                $data[] = [
+                                    "id" => Str::uuid(),
+                                    "pegawai_id" => $peg->id,
+                                    "tanggal" => $getTgl,
+                                    "hari" => 1,
+                                    "status" => 1,
+                                    "keterangan" => 'Tidak Absen Masuk',
+                                    "jenis_izin_id" => null,
+                                    "jam_masuk" => null,
+                                    "is_telat" => 1,
+                                    "jam_pulang" => $getAbsenPulang->jam ?? null,
+                                    "is_pulang_cepat" => (isset($getAbsenPulang->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_pulang) > strtotime($getAbsenPulang->jam)) ? 1 : 0) : 0,
+                                    "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
+                                    "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
+                                ];
+                            } else {
+                                $data[] = [
+                                    "id" => Str::uuid(),
+                                    "pegawai_id" => $peg->id,
+                                    "tanggal" => $getTgl,
+                                    "hari" => 1,
+                                    "status" => 1,
+                                    "keterangan" => 'Tidak Absen',
+                                    "jenis_izin_id" => null,
+                                    "jam_masuk" => null,
+                                    "is_telat" => 1,
+                                    "jam_pulang" => null,
+                                    "is_pulang_cepat" => 1,
+                                    "user" => Auth::user()->name,
+                                    "created_at" => date('Y-m-d H:i:s'),
+                                    "updated_at" => date('Y-m-d H:i:s'),
+                                    "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
+                                    "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
+                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
+                                    "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
+                                ];
                             }
                         }
                     }

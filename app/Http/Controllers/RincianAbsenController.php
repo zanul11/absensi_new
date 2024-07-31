@@ -29,7 +29,7 @@ class RincianAbsenController extends Controller
             Cache::put('sTgl', $tanggal[1] ?? $tanggal[0]);
             $from = date('Y-m-d', strtotime((Cache::has('dTgl')) ? Cache::get('dTgl') : date('Y-m-01')));
             $to = date('Y-m-d', strtotime((Cache::has('sTgl')) ? Cache::get('sTgl') : date('Y-m-d')));
-            $pegawai = Pegawai::orderby('name')->get();
+            $pegawai = Pegawai::with('jadwal_operator')->orderby('name')->get();
             $data_absen = [];
             $hitung_absen = true;
             foreach ($pegawai as $peg) {
@@ -50,10 +50,11 @@ class RincianAbsenController extends Controller
                             // alert()->warning('Warning', 'Pegawai ' . $peg->name . ' Tidak Memiliki Shift !!');
                         }
                     }
+
                     if ($hitung_absen) {
                         if ($r->keterangan != 'Tidak Absen') {
-                            $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
-                            $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+                            $jam_masuk = $r->jam_masuk;
+                            $jam_pulang = $r->jam_pulang;
 
                             $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
                             $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
@@ -70,10 +71,13 @@ class RincianAbsenController extends Controller
                             $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
                         }
                         // return JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                        if ($peg->is_shift == 0)
-                            $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
-                        else
-                            $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+                        // if ($peg->is_shift == 0)
+                        //     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
+                        // else
+                        //     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+
+                        $start_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
+
                         $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
 
                         // echo ($start_datetime->diff($end_datetime));
@@ -157,8 +161,8 @@ class RincianAbsenController extends Controller
                 }
                 if ($hitung_absen) {
                     if ($r->keterangan != 'Tidak Absen') {
-                        $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
-                        $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+                        $jam_masuk = $r->jam_masuk;
+                        $jam_pulang = $r->jam_pulang;
 
                         $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
                         $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
@@ -173,10 +177,11 @@ class RincianAbsenController extends Controller
                         $diff_mins = floor(abs($d1->getTimestamp() - $d2->getTimestamp()) / 60);
                     }
                     // return JadwalAbsen::where('hari', date('N'))->first()->jam_masuk_istirahat;
-                    if ($peg->is_shift == 0)
-                        $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
-                    else
-                        $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+                    // if ($peg->is_shift == 0)
+                    //     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal->jam_masuk_toleransi);
+                    // else
+                    //     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
+                    $start_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
                     $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
 
                     // echo ($start_datetime->diff($end_datetime));

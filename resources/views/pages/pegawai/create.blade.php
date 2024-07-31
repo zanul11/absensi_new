@@ -66,7 +66,7 @@
                                     <p>Status Pegawai</p>
                                     <select class="form-control" name="status_pegawai">
                                         <option value="1" {{ old('status_pegawai',$pegawai->status_pegawai??'')==1 ? 'selected' : '' }}>
-                                            Aktif 
+                                            Aktif
                                         </option>
                                         <option value="0" {{ old('status_pegawai',$pegawai->status_pegawai??'')==0 ? 'selected' : '' }}>
                                             Non Aktif
@@ -74,11 +74,11 @@
 
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
+                                <div class="form-group col-lg-4 col-md-12 col-xs-12">
                                     <p>Pegawai Shift</p>
                                     <select class="form-control" name="is_shift">
                                         <option value="0" {{ old('is_shift',$pegawai->is_shift??'')==0 ? 'selected' : '' }}>
-                                            TIDAK 
+                                            TIDAK
                                         </option>
                                         <option value="1" {{ old('is_shift',$pegawai->is_shift??'')==1 ? 'selected' : '' }}>
                                             IYA
@@ -86,30 +86,42 @@
 
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-2 col-md-12 col-xs-12">
-                                    <p>Operator</p>
-                                    <select class="form-control" name="is_operator">
-                                        <option value="0" {{ old('is_operator',$pegawai->is_operator??'')==0 ? 'selected' : '' }}>
-                                            TIDAK 
-                                        </option>
-                                        <option value="1" {{ old('is_operator',$pegawai->is_operator??'')==1 ? 'selected' : '' }}>
-                                            IYA
-                                        </option>
 
-                                    </select>
-                                </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>No Hp</p>
                                     <input id="nohp" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="12" type="number" name="nohp" class="form-control" value="{{ old('nohp',$pegawai->nohp??'') }}" required>
                                 </div>
                                 <div class="form-group col-lg-6 col-md-12 col-xs-12">
-                                    <p>Lokasi Absen Default</p>
+                                    <p>Lokasi Absen </p>
                                     <select class="form-control select2" data-live-search="false" name="location_id">
                                         @foreach ($locations as $key => $dt)
                                         <option value="{{ $dt->id }}" {{ old('location_id',$pegawai->location_id??'')==$dt->id ? 'selected' : '' }}>
                                             {{ $dt->name }}
                                         </option>
                                         @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                    <p>Jadwal Operator</p>
+                                    <select class="form-control" data-live-search="false" name="jadwal_operator_id">
+                                        <option value="">Pilih Jadwal</option>
+                                        @foreach ($jadwal_operator as $key => $dt)
+                                        <option value="{{ $dt->id }}" {{ old('jadwal_operator_id',$pegawai->jadwal_operator_id??'')==$dt->id ? 'selected' : '' }}>
+                                            {{ $dt->nama }} | {{ $dt->jam_masuk.' - '.$dt->jam_pulang }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                    <p>Operator</p>
+                                    <select class="form-control" name="is_operator">
+                                        <option value="0" {{ old('is_operator',$pegawai->is_operator??'')==0 ? 'selected' : '' }}>
+                                            TIDAK
+                                        </option>
+                                        <option value="1" {{ old('is_operator',$pegawai->is_operator??'')==1 ? 'selected' : '' }}>
+                                            IYA
+                                        </option>
+
                                     </select>
                                 </div>
                             </div>

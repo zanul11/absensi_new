@@ -63,16 +63,29 @@ class ApiController extends Controller
         // return date('N');
         $hari = date('N') == 7 ? 0 : date('N');
         $jadwal = JadwalAbsen::where('hari', $hari)->first();
-        $pegawai = Pegawai::where('id', $id)->with('lokasi')->first();
-        if ($pegawai->is_shift == 0) {
+        $pegawai = Pegawai::where('id', $id)->with('lokasi')->with('jadwal_operator')->first();
+
+        $type = '';
+        if ($pegawai->is_shift == 0 && $pegawai->is_operator == 0) {
             $keterangan_jam = ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal->jam_pulang));
             $keterangan_jam_istirahat = ($jadwal->status == 0) ? 'Hari Libur' : date('H:i', strtotime($jadwal->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal->jam_masuk_istirahat));
+            $type = 'normal';
+        } else if ($pegawai->is_operator == 1) {
+            $keterangan_jam = ($pegawai->jadwal_operator) ?  (date('H:i', strtotime($pegawai->jadwal_operator->jam_masuk)) . ' - ' . date('H:i', strtotime($pegawai->jadwal_operator->jam_pulang))) : 'Tidak Ada Shift';
+            $keterangan_jam_istirahat =  '-';
+            $type = 'operator';
         } else {
             $jadwal_pegawai = ShiftPegawai::with('shift')->where('pegawai_id', $id)->whereDate('tanggal_mulai', '<=', date('Y-m-d'))->whereDate('tanggal_selesai', '>=', date('Y-m-d'))->first();
             $keterangan_jam = ($jadwal_pegawai) ?  (date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_pulang))) : 'Tidak Ada Shift';
             $keterangan_jam_istirahat = ($jadwal_pegawai) ? (date('H:i', strtotime($jadwal_pegawai->shift->jam_keluar_istirahat)) . ' - ' . date('H:i', strtotime($jadwal_pegawai->shift->jam_masuk_istirahat))) : '';
+            $type = 'shift';
         }
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
+
+        if ($pegawai->is_operator == 1 && $pegawai->jadwal_operator->is_beda_hari) {
+            if (date('H:i') < date('H:i', strtotime('-120 minutes', strtotime($pegawai->jadwal_operator->jam_masuk))))
+                $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d', strtotime('-1 days')))->get();
+        }
         $data = [];
         foreach ($absen as $r) {
             $data[] = [
@@ -94,6 +107,7 @@ class ApiController extends Controller
                     "nama" => $pegawai->name,
                     'jadwal' => $keterangan_jam,
                     'istirahat' => $keterangan_jam_istirahat,
+                    "type" => $type,
                     "data_absen" => $data,
                     "hari" => Absensi::where('pegawai_id', $id)->where('hari', true)->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
                     "telat" => Absensi::where('pegawai_id', $id)->where('hari', true)->where('is_telat', true)->where('keterangan', '!=', 'Tidak Absen')->whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count(),
@@ -146,6 +160,88 @@ class ApiController extends Controller
                         'error' => true,
                         'data' => 'Lokasi Tidak Sesuai, Tidak Bisa Absen',
                     ]);
+                }
+                if ($pegawai->is_operator == 1 && $pegawai->jadwal_operator->is_beda_hari == 1) {
+                    //jika pegawai operator dan beda shift
+                    if (date('H:i:s') < date('H:i:s', strtotime($pegawai->jadwal_operator->jam_masuk)) && date('H:i:s') > date('H:i:s', strtotime($pegawai->jadwal_operator->jam_pulang))) {
+                        //jam pulang untuk operator 
+                        if (date('H:i:s') <= date('H:i:s', strtotime('+120 minutes', strtotime($pegawai->jadwal_operator->jam_pulang)))) {
+                            $tgl_pulang = date('Y-m-d', strtotime('-1 day'));
+                            $cek_sudah_absen = Kehadiran::where('tanggal', $tgl_pulang)->where('pegawai_id', $id)->where('jenis', 1)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir = Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => $tgl_pulang,
+                                    'jenis' => 1,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Pulang Berhasil',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Keluar!',
+                                ]);
+                            }
+                        } else {
+                            return response()->json([
+                                'status' => 200,
+                                'error' => true,
+                                'data' => 'Absen Keluar Lebih Dari 2 Jam!',
+                            ]);
+                        }
+                    } else if (date('H:i:s') > date('H:i:s', strtotime('-30 minutes', strtotime($pegawai->jadwal_operator->jam_masuk))) && date('H:i:s') <= date('H:i:s', strtotime('+60 minutes', strtotime($pegawai->jadwal_operator->jam_masuk)))) {
+                        //jam masuk
+                        $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
+                        if (!$cek_sudah_absen) {
+                            $hadir = Kehadiran::create([
+                                'pegawai_id' => $id,
+                                'tanggal' => date('Y-m-d'),
+                                'jenis' => 0,
+                                'keterangan' => 'Absen Mobile',
+                                'jam' => date('H:i:s'),
+                                'location' => $location,
+                                'user' => Pegawai::where('id', $id)->first()->name
+                            ]);
+                            if ($request->hasFile('file')) {
+                                $hadir
+                                    ->addMediaFromRequest('file')
+                                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                    ->toMediaCollection('absen');
+                            }
+                            return response()->json([
+                                'status' => 200,
+                                'error' => false,
+                                'data' => 'Absen Masuk Berhasil',
+                            ]);
+                        } else {
+                            return response()->json([
+                                'status' => 200,
+                                'error' => true,
+                                'data' => 'Sudah Absen Masuk!',
+                            ]);
+                        }
+                    } else {
+                        return response()->json([
+                            'status' => 200,
+                            'error' => true,
+                            'data' => 'Di luar jam absen!',
+                        ]);
+                    }
+                    return $pegawai->jadwal_operator->jam_pulang;
                 }
                 if (date('H') > 6 && date('H:i') < date('H:i', strtotime($jadwal->jam_keluar_istirahat))) {
                     //absen masuk
@@ -470,8 +566,8 @@ class ApiController extends Controller
             if ($hitung_absen) {
                 $jam_kerja = '-';
                 $diff_mins = 0;
-                $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
-                $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+                $jam_masuk = $r->jam_masuk;
+                $jam_pulang = $r->jam_pulang;
                 $jam_keluar_istirahat = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_keluar_istirahat : $jadwal->jam_keluar_istirahat;
                 $jam_masuk_istirahat = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk_istirahat : $jadwal->jam_masuk_istirahat;
                 $assigned_time = $jam_masuk ?? $jam_keluar_istirahat ?? $jam_masuk_istirahat ?? $jam_masuk;

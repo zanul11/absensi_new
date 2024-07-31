@@ -29,6 +29,7 @@ class PegawaiRequest extends FormRequest
             "is_shift" => ["required", "boolean"],
             "is_operator" => ["required", "boolean"],
             "status_pegawai" => ["required", "boolean"],
+            "jadwal_operator_id" => ["nullable", "exists:jadwal_operators,id"],
         ];
     }
 

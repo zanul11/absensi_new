@@ -67,8 +67,8 @@ class LaporanAbsenController extends Controller
                 }
                 if ($hitung_absen) {
                     if ($r->keterangan != 'Tidak Absen') {
-                        $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
-                        $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+                        $jam_masuk = $r->jam_masuk;
+                        $jam_pulang = $r->jam_pulang;
                         $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
                         $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
                         $d1 = new DateTime($assigned_time);
@@ -150,8 +150,8 @@ class LaporanAbsenController extends Controller
                 }
                 if ($hitung_absen) {
                     if ($r->keterangan != 'Tidak Absen') {
-                        $jam_masuk = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_masuk : $jadwal->jam_masuk;
-                        $jam_pulang = ($peg->is_shift == 1) ? $jadwal_pegawai_shift->shift->jam_pulang : $jadwal->jam_pulang;
+                        $jam_masuk = $r->jam_masuk;
+                        $jam_pulang = $r->jam_pulang;
                         $assigned_time = $r->jam_masuk ?? $r->jam_keluar_istirahat ?? $r->jam_masuk_istirahat ?? $jam_masuk;
                         $completed_time = ($r->jam_pulang != null) ? ((strtotime($r->jam_pulang) > strtotime($jam_pulang)) ? $jam_pulang : $r->jam_pulang) : $jam_pulang;
                         $d1 = new DateTime($assigned_time);
