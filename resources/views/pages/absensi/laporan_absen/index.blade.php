@@ -17,7 +17,7 @@
                         <a target="_blank" href="{{route('laporan_absen.show',1)}}" class="mt-2 edit-profile">
                             <i data-feather="file"></i></a>
                     </div>
-                   
+
                 </div>
                 <form action="" method="get" data-parsley-validate="true">
                     <div class="row">
@@ -27,10 +27,10 @@
                         <div class="form-group col-lg-4 col-md-12 col-xs-12">
                             <button type="submit" class="form-control btn-success">Filter Tanggal</button>
                         </div>
-                      
+
                     </div>
                 </form>
-               
+
                 <div class="table-responsive">
                     <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
                         <thead>
@@ -50,16 +50,16 @@
                             </tr>
                         </thead>
                         @php
-                            $hari_kerja = 0;
-                            $kehadiran = 0;
-                            $telat = 0;
-                            $tanpa_keterangan = 0;
-                            $total_persen = 0;
+                        $hari_kerja = 0;
+                        $kehadiran = 0;
+                        $telat = 0;
+                        $tanpa_keterangan = 0;
+                        $total_persen = 0;
                         @endphp
 
-                        @foreach ($jenis_izin as $izin) 
+                        @foreach ($jenis_izin as $izin)
                         @php
-                            ${$izin->name} = 0;
+                        ${$izin->name} = 0;
                         @endphp
                         @endforeach
                         <tbody>
@@ -69,7 +69,10 @@
                             $kehadiran += $data['kehadiran'];
                             $telat += $data['telat'];
                             $tanpa_keterangan += $data['tanpa_keterangan'];
+                            if($data['jam_kerja']>0) {
                             $total_persen += ((($data['kehadiran']/$data['jam_kerja'])*100));
+                            }
+
                             @endphp
                             <tr>
                                 <td>{{$loop->iteration}}</td>
@@ -79,11 +82,11 @@
                                 <td>{{$data['kehadiran']}}</td>
                                 <td>{{$data['telat']}}</td>
                                 <td>{{$data['tanpa_keterangan']}}</td>
-                                @foreach ($jenis_izin as $izin) 
-                                    <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
-                                    @php
-                                        ${$izin->name} += $data[strtolower(str_replace(' ', '_', $izin->name))];
-                                    @endphp
+                                @foreach ($jenis_izin as $izin)
+                                <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
+                                @php
+                                ${$izin->name} += $data[strtolower(str_replace(' ', '_', $izin->name))];
+                                @endphp
                                 @endforeach
                                 <td>{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
                                 <td>{{round(($data['kehadiran']/$data['jam_kerja'])*100,2)}}%</td>
@@ -97,11 +100,11 @@
                                 <td>{{$kehadiran}}</td>
                                 <td>{{$telat}}</td>
                                 <td>{{$tanpa_keterangan}}</td>
-                                @foreach ($jenis_izin as $izin) 
+                                @foreach ($jenis_izin as $izin)
                                 <td>{{ ${$izin->name} }}</td>
                                 @endforeach
                                 <td colspan="2" style="text-align: center">{{round($total_persen/count($data_absen),2)}}%</td>
-                                
+
                             </tr>
                         </tfoot>
                     </table>
@@ -144,9 +147,9 @@
         lengthChange: true,
         pageLength: 100,
         lengthMenu: [
-       
-        100, 250, 500, 'All'
-    ],
+
+            100, 250, 500, 'All'
+        ],
         render: function(data, type, row, meta) {
             return meta.row + meta.settings._iDisplayStart + 1;
         }
