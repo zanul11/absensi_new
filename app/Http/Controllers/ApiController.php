@@ -82,10 +82,17 @@ class ApiController extends Controller
         }
         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d'))->get();
 
-        if ($pegawai->is_operator == 1 && $pegawai->jadwal_operator->is_beda_hari) {
+
+        // if ($pegawai->is_operator == 1 && $pegawai->jadwal_operator->is_beda_hari) {
+        //     if (date('H:i') < date('H:i', strtotime('-120 minutes', strtotime($pegawai->jadwal_operator->jam_masuk))))
+        //         $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d', strtotime('-1 days')))->get();
+        // }
+
+        if ($pegawai->is_shift == 1 && $jadwal_pegawai->shift->is_beda_hari == 1) {
             if (date('H:i') < date('H:i', strtotime('-120 minutes', strtotime($pegawai->jadwal_operator->jam_masuk))))
                 $absen = Kehadiran::with('pegawai')->where('pegawai_id', $id)->whereDate('tanggal', date('Y-m-d', strtotime('-1 days')))->get();
         }
+
         $data = [];
         foreach ($absen as $r) {
             $data[] = [
@@ -394,146 +401,229 @@ class ApiController extends Controller
                         'data' => 'Jadwal Shift Tidak Ditemukan',
                     ]);
                 } else {
-                    if (date('H') > date('H', strtotime($shift_pegawai->shift->jam_masuk . '-1 hour')) && date('H:i') < date('H:i', strtotime($shift_pegawai->shift->jam_keluar_istirahat))) {
-                        //absen masuk
-                        $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
-                        if (!$cek_sudah_absen) {
-                            $hadir = Kehadiran::create([
-                                'pegawai_id' => $id,
-                                'tanggal' => date('Y-m-d'),
-                                'jenis' => 0,
-                                'keterangan' => 'Absen Mobile',
-                                'jam' => date('H:i:s'),
-                                'location' => $location,
-                                'user' => Pegawai::where('id', $id)->first()->name
-                            ]);
-                            if ($request->hasFile('file')) {
-                                // $hadir->getFirstMedia('absen')?->delete();
-                                $hadir
-                                    ->addMediaFromRequest('file')
-                                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
-                                    ->toMediaCollection('absen');
+                    if ($shift_pegawai->shift->is_beda_hari) {
+                        //jika beda hari
+                        if (date('H:i:s') < date('H:i:s', strtotime($shift_pegawai->shift->jam_masuk)) && date('H:i:s') > date('H:i:s', strtotime($shift_pegawai->shift->jam_pulang))) {
+                            //jam pulang untuk shift beda hari 
+                            if (date('H:i:s') <= date('H:i:s', strtotime('+120 minutes', strtotime($shift_pegawai->shift->jam_pulang)))) {
+                                $tgl_pulang = date('Y-m-d', strtotime('-1 day'));
+                                $cek_sudah_absen = Kehadiran::where('tanggal', $tgl_pulang)->where('pegawai_id', $id)->where('jenis', 1)->first();
+                                if (!$cek_sudah_absen) {
+                                    $hadir = Kehadiran::create([
+                                        'pegawai_id' => $id,
+                                        'tanggal' => $tgl_pulang,
+                                        'jenis' => 1,
+                                        'keterangan' => 'Absen Mobile',
+                                        'jam' => date('H:i:s'),
+                                        'location' => $location,
+                                        'user' => Pegawai::where('id', $id)->first()->name
+                                    ]);
+                                    if ($request->hasFile('file')) {
+                                        $hadir
+                                            ->addMediaFromRequest('file')
+                                            ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                            ->toMediaCollection('absen');
+                                    }
+                                    return response()->json([
+                                        'status' => 200,
+                                        'error' => false,
+                                        'data' => 'Absen Pulang Berhasil',
+                                    ]);
+                                } else {
+                                    return response()->json([
+                                        'status' => 200,
+                                        'error' => true,
+                                        'data' => 'Sudah Absen Pulang!',
+                                    ]);
+                                }
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Absen Pulang Lebih Dari 2 Jam!',
+                                ]);
                             }
-                            return response()->json([
-                                'status' => 200,
-                                'error' => false,
-                                'data' => 'Absen Masuk Berhasil',
-                            ]);
+                        } else if (date('H:i:s') > date('H:i:s', strtotime('-30 minutes', strtotime($shift_pegawai->shift->jam_masuk))) && date('H:i:s') <= date('H:i:s', strtotime('+60 minutes', strtotime($shift_pegawai->shift->jam_masuk)))) {
+                            //jam masuk
+                            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir = Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => date('Y-m-d'),
+                                    'jenis' => 0,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Masuk Berhasil',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Masuk!',
+                                ]);
+                            }
                         } else {
                             return response()->json([
                                 'status' => 200,
                                 'error' => true,
-                                'data' => 'Sudah Absen Masuk!',
-                            ]);
-                        }
-                    } else if (date('H:i') >= date('H:i', strtotime($shift_pegawai->shift->jam_keluar_istirahat)) && date('H:i') < date('H:i', strtotime('-30 minutes', strtotime($shift_pegawai->shift->jam_masuk_istirahat)))) {
-                        //absen keluar istirahat
-                        $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 2)->first();
-                        if (!$cek_sudah_absen) {
-                            $hadir =  Kehadiran::create([
-                                'pegawai_id' => $id,
-                                'tanggal' => date('Y-m-d'),
-                                'jenis' => 2,
-                                'keterangan' => 'Absen Mobile',
-                                'jam' => date('H:i:s'),
-                                'location' => $location,
-                                'user' => Pegawai::where('id', $id)->first()->name
-                            ]);
-                            if ($request->hasFile('file')) {
-                                // $hadir->getFirstMedia('absen')?->delete();
-                                $hadir
-                                    ->addMediaFromRequest('file')
-                                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
-                                    ->toMediaCollection('absen');
-                            }
-                            return response()->json([
-                                'status' => 200,
-                                'error' => false,
-                                'data' => 'Absen Keluar Berhasil!',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'status' => 200,
-                                'error' => true,
-                                'data' => 'Sudah Absen Keluar!',
-                            ]);
-                        }
-                    } else if (date('H:i') >= date('H:i', strtotime('-30 minutes', strtotime($shift_pegawai->shift->jam_masuk_istirahat))) && date('H:i') <= date('H:i', strtotime($shift_pegawai->shift->jam_masuk_istirahat))) {
-                        //absen masuk istirahat
-                        $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 3)->first();
-                        if (!$cek_sudah_absen) {
-                            $hadir =  Kehadiran::create([
-                                'pegawai_id' => $id,
-                                'tanggal' => date('Y-m-d'),
-                                'jenis' => 3,
-                                'keterangan' => 'Absen Mobile',
-                                'jam' => date('H:i:s'),
-                                'location' => $location,
-                                'user' => Pegawai::where('id', $id)->first()->name
-                            ]);
-                            if ($request->hasFile('file')) {
-                                // $hadir->getFirstMedia('absen')?->delete();
-                                $hadir
-                                    ->addMediaFromRequest('file')
-                                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
-                                    ->toMediaCollection('absen');
-                            }
-                            return response()->json([
-                                'status' => 200,
-                                'error' => false,
-                                'data' => 'Absen Kembali Berhasil!',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'status' => 200,
-                                'error' => true,
-                                'data' => 'Sudah Absen Kembali!',
-                            ]);
-                        }
-                    } else if (date('H:i') > date('H:i', strtotime($shift_pegawai->shift->jam_masuk_istirahat)) && date('H') < date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour'))) {
-                        return response()->json([
-                            'status' => 200,
-                            'error' => true,
-                            'data' => 'Belum waktunya absen pulang!',
-                        ]);
-                    } else if (date('H') >= date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour')) && date('yyyy-mm-dd H') <= date('yyyy-mm-dd H', strtotime($shift_pegawai->shift->jam_pulang . '+3 hour'))) {
-                        //absen pulang
-                        $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
-                        if (!$cek_sudah_absen) {
-                            $hadir = Kehadiran::create([
-                                'pegawai_id' => $id,
-                                'tanggal' => date('Y-m-d'),
-                                'jenis' => 1,
-                                'keterangan' => 'Absen Mobile',
-                                'jam' => date('H:i:s'),
-                                'location' => $location,
-                                'user' => Pegawai::where('id', $id)->first()->name
-                            ]);
-                            if ($request->hasFile('file')) {
-                                // $hadir->getFirstMedia('absen')?->delete();
-                                $hadir
-                                    ->addMediaFromRequest('file')
-                                    ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
-                                    ->toMediaCollection('absen');
-                            }
-                            return response()->json([
-                                'status' => 200,
-                                'error' => false,
-                                'data' => 'Absen Pulang Berhasil',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'status' => 200,
-                                'error' => true,
-                                'data' => 'Sudah Absen Pulang!',
+                                'data' => 'Di luar jam absen!',
                             ]);
                         }
                     } else {
-                        return response()->json([
-                            'status' => 200,
-                            'error' => true,
-                            'data' => 'Di luar shift / jam absen!',
-                        ]);
+                        //jika jam masuknya dalam sehari tidak beda hari
+                        if (date('H') > date('H', strtotime($shift_pegawai->shift->jam_masuk . '-1 hour')) && date('H:i') < date('H:i', strtotime($shift_pegawai->shift->jam_keluar_istirahat))) {
+                            //absen masuk
+                            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 0)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir = Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => date('Y-m-d'),
+                                    'jenis' => 0,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    // $hadir->getFirstMedia('absen')?->delete();
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Masuk Berhasil',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Masuk!',
+                                ]);
+                            }
+                        } else if (date('H:i') >= date('H:i', strtotime($shift_pegawai->shift->jam_keluar_istirahat)) && date('H:i') < date('H:i', strtotime('-30 minutes', strtotime($shift_pegawai->shift->jam_masuk_istirahat))) && $shift_pegawai->shift->is_istirahat == 1) {
+                            //absen keluar istirahat
+                            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 2)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir =  Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => date('Y-m-d'),
+                                    'jenis' => 2,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    // $hadir->getFirstMedia('absen')?->delete();
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Keluar Berhasil!',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Keluar!',
+                                ]);
+                            }
+                        } else if (date('H:i') >= date('H:i', strtotime('-30 minutes', strtotime($shift_pegawai->shift->jam_masuk_istirahat))) && date('H:i') <= date('H:i', strtotime($shift_pegawai->shift->jam_masuk_istirahat)) && $shift_pegawai->shift->is_istirahat == 1) {
+                            //absen masuk istirahat
+                            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 3)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir =  Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => date('Y-m-d'),
+                                    'jenis' => 3,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    // $hadir->getFirstMedia('absen')?->delete();
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Kembali Berhasil!',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Kembali!',
+                                ]);
+                            }
+                        } else if (date('H:i') > date('H:i', strtotime($shift_pegawai->shift->jam_masuk_istirahat)) && date('H') < date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour'))) {
+                            return response()->json([
+                                'status' => 200,
+                                'error' => true,
+                                'data' => 'Belum waktunya absen pulang!',
+                            ]);
+                        } else if (date('H') >= date('H', strtotime($shift_pegawai->shift->jam_pulang . '-1 hour')) && date('yyyy-mm-dd H') <= date('yyyy-mm-dd H', strtotime($shift_pegawai->shift->jam_pulang . '+3 hour'))) {
+                            //absen pulang
+                            $cek_sudah_absen = Kehadiran::where('tanggal', date('Y-m-d'))->where('pegawai_id', $id)->where('jenis', 1)->first();
+                            if (!$cek_sudah_absen) {
+                                $hadir = Kehadiran::create([
+                                    'pegawai_id' => $id,
+                                    'tanggal' => date('Y-m-d'),
+                                    'jenis' => 1,
+                                    'keterangan' => 'Absen Mobile',
+                                    'jam' => date('H:i:s'),
+                                    'location' => $location,
+                                    'user' => Pegawai::where('id', $id)->first()->name
+                                ]);
+                                if ($request->hasFile('file')) {
+                                    // $hadir->getFirstMedia('absen')?->delete();
+                                    $hadir
+                                        ->addMediaFromRequest('file')
+                                        ->usingFileName($hadir->id  . "." . $request->file('file')->extension())
+                                        ->toMediaCollection('absen');
+                                }
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => false,
+                                    'data' => 'Absen Pulang Berhasil',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => 200,
+                                    'error' => true,
+                                    'data' => 'Sudah Absen Pulang!',
+                                ]);
+                            }
+                        } else {
+                            return response()->json([
+                                'status' => 200,
+                                'error' => true,
+                                'data' => 'Di luar shift / jam absen!',
+                            ]);
+                        }
                     }
                 }
             }

@@ -50,6 +50,30 @@
                                     <p>Nama Shift</p>
                                     <input id="nama" type="text" name="nama" class="form-control" value="{{ old('nama',$jadwalShift->nama??'') }}" required>
                                 </div>
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                    <p>Beda Hari?</p>
+                                    <select class="form-control" name="is_beda_hari">
+                                        <option value="0" {{ old('is_beda_hari',$jadwalShift->is_beda_hari??'')==0 ? 'selected' : '' }}>
+                                            TIDAK
+                                        </option>
+                                        <option value="1" {{ old('is_beda_hari',$jadwalShift->is_beda_hari??'')==1 ? 'selected' : '' }}>
+                                            IYA
+                                        </option>
+
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                    <p>Jadwal Istirahat?</p>
+                                    <select class="form-control" name="is_istirahat">
+                                        <option value="0" {{ old('is_istirahat',$jadwalShift->is_istirahat??'')==0 ? 'selected' : '' }}>
+                                            TIDAK
+                                        </option>
+                                        <option value="1" {{ old('is_istirahat',$jadwalShift->is_istirahat??'')==1 ? 'selected' : '' }}>
+                                            IYA
+                                        </option>
+
+                                    </select>
+                                </div>
                                 <div class="form-group col-lg-6">
                                     <p>Jam Masuk</p>
                                     <input class="form-control flatpickr flatpickr-input basicFlatpickr" value="{{(isset($jadwalShift))?date('H:i', strtotime($jadwalShift->jam_masuk)):''}}" type="text" name="jam_masuk" required>

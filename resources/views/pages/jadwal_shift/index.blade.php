@@ -26,6 +26,7 @@
                                 <th>Jam Pulang</th>
                                 <th>Jam Keluar Istirahat</th>
                                 <th>Jam Masuk Istirahat</th>
+                                <th>Beda Hari</th>
                                 <th>User </th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
@@ -89,6 +90,10 @@
             {
                 data: 'jam_masuk_istirahat',
                 name: 'jam_masuk_istirahat',
+            },
+            {
+                data: 'beda_hari',
+                name: 'beda_hari',
             },
             {
                 data: 'user_detail',

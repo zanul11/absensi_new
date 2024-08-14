@@ -30,11 +30,11 @@ return [
                     'url' => 'jadwal_absen',
                     'title' => 'jadwal absen'
                 ],
-                [
-                    'id' => 'jadwal operator',
-                    'url' => 'jadwal_operator',
-                    'title' => 'jadwal operator'
-                ],
+                // [
+                //     'id' => 'jadwal operator',
+                //     'url' => 'jadwal_operator',
+                //     'title' => 'jadwal operator'
+                // ],
                 [
                     'id' => 'jadwal shift',
                     'url' => 'jadwal_shift',

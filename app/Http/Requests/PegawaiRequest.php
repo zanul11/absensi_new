@@ -27,9 +27,9 @@ class PegawaiRequest extends FormRequest
             "location_id" => ["required", "exists:locations,id"],
             "user" => ["required", "string"],
             "is_shift" => ["required", "boolean"],
-            "is_operator" => ["required", "boolean"],
+            // "is_operator" => ["required", "boolean"],
             "status_pegawai" => ["required", "boolean"],
-            "jadwal_operator_id" => ["nullable", "exists:jadwal_operators,id"],
+            // "jadwal_operator_id" => ["nullable", "exists:jadwal_operators,id"],
         ];
     }
 

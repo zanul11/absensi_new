@@ -82,7 +82,7 @@
             },
             {
                 data: 'tanggal',
-                name: 'tanggal'
+                name: 'tanggal_mulai'
             },
             {
                 data: 'shift',

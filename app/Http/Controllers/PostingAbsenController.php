@@ -185,7 +185,6 @@ class PostingAbsenController extends Controller
                                             "jadwal_pulang" => $cekHariKerja->jam_pulang_toleransi,
                                         ];
                                     } else {
-
                                         //jika operator
                                         $data[] = [
                                             "id" => Str::uuid(),
@@ -315,7 +314,6 @@ class PostingAbsenController extends Controller
                     }
                 } else {
                     //Jika Pegawai Shift
-
                     //jika pegawai shift oprator bukan hari libur / pegawai shift biasa
                     $jadwal_shift_pegawai = ShiftPegawai::with('shift')->where('pegawai_id', $peg->id)->whereDate('tanggal_mulai', '<=', $getTgl)->whereDate('tanggal_selesai', '>=', $getTgl)->first();
                     if (!$jadwal_shift_pegawai) {
@@ -399,7 +397,7 @@ class PostingAbsenController extends Controller
                                     "updated_at" => date('Y-m-d H:i:s'),
                                     "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
                                     "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
                                     "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
                                     "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
                                 ];
@@ -429,7 +427,7 @@ class PostingAbsenController extends Controller
                                     "updated_at" => date('Y-m-d H:i:s'),
                                     "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
                                     "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
                                     "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
                                     "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
                                 ];
@@ -451,7 +449,7 @@ class PostingAbsenController extends Controller
                                     "updated_at" => date('Y-m-d H:i:s'),
                                     "jam_keluar_istirahat" => $getAbsenKeluar->jam ?? null,
                                     "jam_masuk_istirahat" => $getAbsenKembali->jam ?? null,
-                                    "is_telat_kembali" => (isset($getAbsenKembali->jam)) ? ((strtotime($jadwal_shift_pegawai->shift->jam_masuk_istirahat) < strtotime($getAbsenKembali->jam)) ? 1 : 0) : 1, //terhitung telat kembali jika tidak absen
+                                    "is_telat_kembali" => 0, //terhitung telat kembali jika tidak absen
                                     "jadwal_masuk" => $jadwal_shift_pegawai->shift->jam_masuk,
                                     "jadwal_pulang" => $jadwal_shift_pegawai->shift->jam_pulang,
                                 ];

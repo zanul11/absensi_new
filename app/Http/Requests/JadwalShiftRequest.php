@@ -22,6 +22,8 @@ class JadwalShiftRequest extends FormRequest
             "jam_pulang" => ["date_format:H:i", "string"],
             "jam_keluar_istirahat" => ["date_format:H:i", "string"],
             "jam_masuk_istirahat" => ["date_format:H:i", "string"],
+            "is_beda_hari" => ["required", "boolean"],
+            "is_istirahat" => ["required", "boolean"],
             "user" => ["required", "string"],
         ];
     }

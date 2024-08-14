@@ -64,6 +64,7 @@
                         @endforeach
                         <tbody>
                             @foreach($data_absen as $data)
+                            @if($data['jam_kerja']>0)
                             @php
                             $hari_kerja += $data['jam_kerja'];
                             $kehadiran += $data['kehadiran'];
@@ -91,6 +92,7 @@
                                 <td>{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
                                 <td>{{round(($data['kehadiran']/$data['jam_kerja'])*100,2)}}%</td>
                             </tr>
+                            @endif
                             @endforeach
                         </tbody>
                         <tfoot>

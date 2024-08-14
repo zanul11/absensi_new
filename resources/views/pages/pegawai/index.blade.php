@@ -29,9 +29,9 @@
                                 <th>Username</th>
                                 <th>Alamat</th>
                                 <th>No Hp</th>
-                                <th>Shift</th>
-                                <th>Operator</th>
+                                <!-- <th>Operator</th> -->
                                  <th>Lokasi Absen</th> 
+                                 <th>Shift</th>
                                 <th style="width: 5% !important;" class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
@@ -98,17 +98,15 @@
                 name: 'nohp'
             }, 
             {
-                data: 'shift',
-                name: 'shift'
-            }, 
-            {
-                data: 'operator',
-                name: 'operator'
-            }, 
-            {
                 data: 'lokasi.name',
                 name: 'lokasi.name'
             },
+            {
+                data: 'shift',
+                name: 'shift'
+            }, 
+          
+            
             {
                 data: 'action',
                 name: 'action'

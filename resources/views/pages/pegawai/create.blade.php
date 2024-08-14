@@ -101,7 +101,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-lg-6 col-md-12 col-xs-12">
+                                <!-- <div class="form-group col-lg-6 col-md-12 col-xs-12">
                                     <p>Jadwal Operator</p>
                                     <select class="form-control" data-live-search="false" name="jadwal_operator_id">
                                         <option value="">Pilih Jadwal</option>
@@ -123,7 +123,7 @@
                                         </option>
 
                                     </select>
-                                </div>
+                                </div> -->
                             </div>
 
 
