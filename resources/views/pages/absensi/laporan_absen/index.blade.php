@@ -32,7 +32,7 @@
                 </form>
 
                 <div class="table-responsive">
-                    <table id="datatable" class="table table-striped table-bordered table-hover" style="width: 100% !important;">
+                    <table id="datatable" class="table table-bordered " style="width: 100% !important;">
                         <thead>
                             <tr>
                                 <th style="width: 5%">#</th>
@@ -55,6 +55,8 @@
                         $telat = 0;
                         $tanpa_keterangan = 0;
                         $total_persen = 0;
+                        $warna = 'white';
+                        $warna_tulisan = 'white';
                         @endphp
 
                         @foreach ($jenis_izin as $izin)
@@ -66,31 +68,47 @@
                             @foreach($data_absen as $data)
                             @if($data['jam_kerja']>0)
                             @php
+                            $warna = 'white';
+                            $warna_tulisan = 'white';
                             $hari_kerja += $data['jam_kerja'];
                             $kehadiran += $data['kehadiran'];
                             $telat += $data['telat'];
                             $tanpa_keterangan += $data['tanpa_keterangan'];
                             if($data['jam_kerja']>0) {
                             $total_persen += ((($data['kehadiran']/$data['jam_kerja'])*100));
+                            $persen_kehadiran = round(($data['kehadiran']/$data['jam_kerja'])*100,2);
+                            }
+                            if($persen_kehadiran < 50){
+                                $warna = 'black';
+                                $warna_tulisan = 'white';
+                            } else if ($persen_kehadiran < 85) {
+                                $warna = 'red';
+                                $warna_tulisan = 'white';
+                            } else if ($persen_kehadiran < 90) {
+                                $warna = 'yellow';
+                                $warna_tulisan = 'black';
+                            }else {
+                                $warna = 'green';
+                                $warna_tulisan = 'white';
                             }
 
                             @endphp
-                            <tr>
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$data['nip']}}</td>
-                                <td>{{$data['nama']}}</td>
-                                <td>{{$data['jam_kerja']}}</td>
-                                <td>{{$data['kehadiran']}}</td>
-                                <td>{{$data['telat']}}</td>
-                                <td>{{$data['tanpa_keterangan']}}</td>
+                            <tr style="background-color: {{$warna}};">
+                                <td style="color: {{$warna_tulisan}};">{{$loop->iteration}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['nip']}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['nama']}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['jam_kerja']}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['kehadiran']}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['telat']}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['tanpa_keterangan']}}</td>
                                 @foreach ($jenis_izin as $izin)
-                                <td>{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data[strtolower(str_replace(' ', '_', $izin->name))]}}</td>
                                 @php
                                 ${$izin->name} += $data[strtolower(str_replace(' ', '_', $izin->name))];
                                 @endphp
                                 @endforeach
-                                <td>{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
-                                <td>{{round(($data['kehadiran']/$data['jam_kerja'])*100,2)}}%</td>
+                                <td style="color: {{$warna_tulisan}};">{{$data['jam']}} Jam {{$data['menit']}} Menit</td>
+                                <td style="color: {{$warna_tulisan}};">{{$persen_kehadiran}}%</td>
                             </tr>
                             @endif
                             @endforeach
