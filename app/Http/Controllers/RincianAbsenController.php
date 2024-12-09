@@ -78,7 +78,11 @@ class RincianAbsenController extends Controller
 
                         $start_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
 
-                        $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
+                        $end_datetime = new DateTime(date('Y-m-d') . ' ' . $completed_time);
+
+                        $jadwal_masuk_ = ($peg->is_shift == 0) ? $jadwal->jam_masuk_toleransi : $jadwal_pegawai_shift->shift->jam_masuk;
+
+                        $jam_jadwal_masuk =  new DateTime(date('Y-m-d') . ' ' . $jadwal_masuk_);
 
                         // echo ($start_datetime->diff($end_datetime));
                         $data_absen[] = [
@@ -93,7 +97,7 @@ class RincianAbsenController extends Controller
                             'keterangan' => ($r->is_telat == 1 && $r->keterangan != 'Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan != 'Tidak Absen') ? 'Tepat Waktu' : $r->keterangan))),
                             'd1' => $assigned_time,
                             'd2' => $completed_time,
-                            'telat' => ($start_datetime->diff($end_datetime))->format('%H:%i'),
+                            'telat' => ($start_datetime->diff($jam_jadwal_masuk))->format('%H:%i:%s'),
                             'jam_kerja' => $jam_kerja,
                             'menit' => $diff_mins
                         ];
@@ -182,8 +186,11 @@ class RincianAbsenController extends Controller
                     // else
                     //     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $jadwal_pegawai_shift->shift->jam_masuk);
                     $start_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
-                    $end_datetime = new DateTime(date('Y-m-d') . ' ' . $assigned_time);
+                    $end_datetime = new DateTime(date('Y-m-d') . ' ' . $completed_time);
 
+                    $jadwal_masuk_ = ($peg->is_shift == 0) ? $jadwal->jam_masuk_toleransi : $jadwal_pegawai_shift->shift->jam_masuk;
+
+                    $jam_jadwal_masuk =  new DateTime(date('Y-m-d') . ' ' . $jadwal_masuk_);
                     // echo ($start_datetime->diff($end_datetime));
                     $data_absen[] = [
                         'tgl' => $r->tanggal,
@@ -197,7 +204,7 @@ class RincianAbsenController extends Controller
                         'keterangan' => ($r->is_telat == 1 && $r->keterangan != 'Tidak Absen') ? 'Terlambat Absen' : (($r->masuk == null && $r->jenis_izin_id != null) ? $r->jenis_izin->name : (($r->hari == 0 && $r->status == 1) ? $r->keterangan : (($r->keterangan != 'Tidak Absen') ? 'Tepat Waktu' : $r->keterangan))),
                         'd1' => $assigned_time,
                         'd2' => $completed_time,
-                        'telat' => ($start_datetime->diff($end_datetime))->format('%H:%i'),
+                        'telat' => ($start_datetime->diff($jam_jadwal_masuk))->format('%H:%i:%s'),
                         'jam_kerja' => $jam_kerja,
                         'menit' => $diff_mins
                     ];
