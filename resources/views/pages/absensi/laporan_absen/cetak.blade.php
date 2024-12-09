@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=21cm, initial-scale=1">
-    <meta name="description" content="Anumula">
-    <meta name="author" content="Anumula">
+    <meta name="description" content="Sistem Informasi Akademik Universitas Mataram">
+    <meta name="author" content="Universitas Mataram">
     <title>Laporan Rekap Absensi</title>
     <!-- <link rel="stylesheet" href="{{asset('cetak/b.min.css')}}"> -->
     <link rel="stylesheet" href="{{asset('cetak/f.min.css')}}">
@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon-precomposed" href="{{asset('assets/img/logo.png')}}">
 
     <style>
-        
+
     </style>
 </head>
 
@@ -59,6 +59,7 @@
 
                     @foreach ($jenis_izin as $izin)
                     @php
+                    $persen_kehadiran = 0 ;
                     ${$izin->name} = 0;
                     @endphp
                     @endforeach
@@ -69,10 +70,13 @@
                     $kehadiran += $data['kehadiran'];
                     $telat += $data['telat'];
                     $tanpa_keterangan += $data['tanpa_keterangan'];
+                    
+
+                    if($data['jam_kerja']>0) {
                     $total_persen += ((($data['kehadiran']/$data['jam_kerja'])*100));
                     $persen_kehadiran = round(($data['kehadiran']/$data['jam_kerja'])*100,2);
+                    }
 
-                    $persen_kehadiran = round(($data['kehadiran']/$data['jam_kerja'])*100,2);
                     if($persen_kehadiran < 50){
                         $warna='black' ;
                         $warna_tulisan='white' ;
@@ -143,7 +147,7 @@
 
     <script type="text/javascript">
         function cetak() {
-            // window.print();
+            window.print();
         };
     </script>
 
